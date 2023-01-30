@@ -1,6 +1,8 @@
 package webserver;
 
+import common.Hangman;
 import io.javalin.http.Context;
+import webserver.utils.Filters;
 
 public abstract class AbstractController {
     private final String path;
@@ -9,10 +11,10 @@ public abstract class AbstractController {
         this.path = path;
     }
 
-    //TODO capire e aggiungere
-//    protected Authenticator getAuthenticatorInstance(Context context) {
-//        return Filters.getSingletonFromContext(Authenticator.class, context);
-//    }
+    //Return the local instance of Hangman, instantiated in the HangmanService (Used in the API's)
+    protected Hangman getHangmanInstance(Context context) {
+        return Filters.getSingletonFromContext(Hangman.class, context);
+    }
 
     public String path(){
         return this.path;
