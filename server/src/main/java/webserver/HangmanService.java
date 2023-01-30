@@ -1,4 +1,6 @@
 package webserver;
+import common.Hangman;
+import common.LocalHangman;
 import io.javalin.Javalin;
 import webserver.users.UserController;
 
@@ -13,6 +15,8 @@ public class HangmanService {
     private final int port;
 
     private final Javalin server;
+
+    private final Hangman localHangman = new LocalHangman();
 
     public HangmanService(int port){
         this.port = port;
