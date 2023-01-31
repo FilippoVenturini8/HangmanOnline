@@ -3,7 +3,7 @@ package common;
 import java.util.Objects;
 
 public class User {
-    String nickName;
+    private String nickName;
 
     public User (String nickName){
         this.nickName = nickName;

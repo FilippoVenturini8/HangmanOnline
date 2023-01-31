@@ -5,7 +5,13 @@ import java.util.List;
 
 public class Lobby {
 
-    List<User> users = new ArrayList<>();
+    private int id;
+
+    private List<User> users = new ArrayList<>();
+
+    public Lobby(int id){
+        this.id = id;
+    }
 
     public void addUser(User user){
         this.users.add(user);
@@ -21,5 +27,9 @@ public class Lobby {
 
     public List<User> getUsers(){
         return List.copyOf(users);
+    }
+
+    public int getId(){
+        return this.id;
     }
 }

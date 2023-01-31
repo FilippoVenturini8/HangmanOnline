@@ -27,7 +27,7 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
 
         var user = context.bodyAsClass(User.class);
         var futureResult = api.createLobby(user);
-        asyncReplyWithoutBody(context, "application/json", futureResult);
+        asyncReplyWithBody(context, "application/json", futureResult);
     }
 
     @Override

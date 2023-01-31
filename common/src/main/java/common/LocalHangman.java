@@ -9,23 +9,27 @@ public class LocalHangman implements Hangman{
 
     private List<Lobby> lobbies = new ArrayList<>();
 
+    private int lobbiesCounter = 0;
+
     @Override
     public void connectUser(User user) throws ConflictException{
-        var copy = new User(user.nickName); //Defensive copy
+        var copy = new User(user.getNickName()); //Defensive copy
         if (copy.getNickName() == null || copy.getNickName().isBlank()) {
             //TODO AGGIUNGERE ECCEZIONE: NICKNAME VUOTO
         }
         if(users.contains(copy)){
-            throw new ConflictException("Nickname " + copy.nickName + " già in uso!");
+            throw new ConflictException("Nickname " + copy.getNickName() + " già in uso!");
         }
-        System.out.println("Utente aggiunto: "+copy.nickName);
+        users.add(copy);
+        System.out.println("Utente aggiunto: "+copy.getNickName());
     }
 
     @Override
-    public void createLobby(User user) {
-        Lobby newLobby = new Lobby();
+    public int createLobby(User user) {
+        Lobby newLobby = new Lobby(lobbiesCounter++);
         newLobby.addUser(user);
         lobbies.add(newLobby);
         System.out.println("Lobby creata!");
+        return newLobby.getId();
     }
 }

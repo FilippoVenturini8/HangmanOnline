@@ -14,11 +14,11 @@ public class LobbyApiImpl extends AbstractApi implements LobbyApi {
         super(storage);
     }
     @Override
-    public CompletableFuture<Void> createLobby(User user) {
+    public CompletableFuture<Integer> createLobby(User user) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    storage().createLobby(user);
-                    return null;
+                    Integer lobbyId = storage().createLobby(user);
+                    return lobbyId;
                     //TODO forse ci vanno eccezioni
                 }
         );

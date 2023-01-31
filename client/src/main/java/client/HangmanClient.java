@@ -41,7 +41,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
-    private CompletableFuture<?> createLobbyAsync(User user) {
+    private CompletableFuture<Integer> createLobbyAsync(User user) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/lobbies"))
                 .header("Accept", "application/json")
@@ -49,15 +49,17 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 .build();
         return sendRequestToClient(request)
                 .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeOne(String.class));
+                .thenComposeAsync(deserializeOne(Integer.class));
     }
 
     @Override
-    public void createLobby(User user) {
+    public int createLobby(User user) {
         try {
-            createLobbyAsync(user).join();
+            return createLobbyAsync(user).join();
         } catch (CompletionException e) {
             //throw getCauseAs(e, ConflictException.class);
+            //TODO AGGIUNGERE ECCEZIONE
+            return -1;
         }
     }
 
@@ -85,10 +87,12 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         System.out.println("[1] Crea una lobby");
 
         String option = scanner.nextLine();
+        int lobbyId;
 
         switch (option){
             case "1":
-                client.createLobby(user);
+                lobbyId = client.createLobby(user);
+                System.out.println("Lobby creata correttamente, codice lobby: "+lobbyId);
                 break;
         }
 

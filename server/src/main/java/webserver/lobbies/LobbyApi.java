@@ -10,7 +10,7 @@ import webserver.users.impl.UserApiImpl;
 import java.util.concurrent.CompletableFuture;
 
 public interface LobbyApi {
-    CompletableFuture<Void> createLobby(User user);
+    CompletableFuture<Integer> createLobby(User user);
 
     static LobbyApi of(Hangman storage){
         return new LobbyApiImpl(storage);
