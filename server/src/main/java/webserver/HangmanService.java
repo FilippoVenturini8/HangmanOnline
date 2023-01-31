@@ -2,6 +2,7 @@ package webserver;
 import common.Hangman;
 import common.LocalHangman;
 import io.javalin.Javalin;
+import presentation.GsonUtils;
 import webserver.users.UserController;
 import webserver.utils.Filters;
 
@@ -23,6 +24,7 @@ public class HangmanService {
         this.port = port;
         server = Javalin.create(config -> {
             config.plugins.enableDevLogging();
+            config.jsonMapper(new JavalinGsonAdapter(GsonUtils.createGson()));
         });
 
         //Put the instance of the LocalHangman in the context. (The get will be done by the Controllers)

@@ -1,7 +1,9 @@
 package webserver.users.impl;
 
+import common.ConflictException;
 import common.Hangman;
 import common.User;
+import io.javalin.http.ConflictResponse;
 import webserver.AbstractApi;
 import webserver.users.UserApi;
 
@@ -20,6 +22,8 @@ public class UserApiImpl extends AbstractApi implements UserApi {
                     try{
                         storage().connectUser(user);
                         return null;
+                    }catch (ConflictException e) {
+                        throw new ConflictResponse();
                     }catch (Exception e){
                         //TODO aggiungere eccezione
                         System.out.println("ERRORE CONNESSIONE UTENTE");

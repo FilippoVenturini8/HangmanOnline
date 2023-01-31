@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.JsonParseException;
+import common.ConflictException;
 import presentation.GsonUtils;
 
 import com.google.gson.Gson;
@@ -12,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
 public class AbstractHttpClientStub {
@@ -39,15 +41,15 @@ public class AbstractHttpClientStub {
                 return CompletableFuture.completedFuture(response.body());
             } else if (response.statusCode() == 400) { // bad content
                 return CompletableFuture.failedFuture(new IllegalArgumentException(response.body()));
+            }else if (response.statusCode() == 409) { // conflict
+                return CompletableFuture.failedFuture(new ConflictException(response.body()));
             }
             //TODO AGGIUNGERE ECCEZIONI GIUSTE
             /*else if (response.statusCode() == 401) { // unauthorized
                 return CompletableFuture.failedFuture(new WrongCredentialsException(response.body()));
             } else if (response.statusCode() == 404) { // not found
                 return CompletableFuture.failedFuture(new MissingException(response.body()));
-            } else if (response.statusCode() == 409) { // conflict
-                return CompletableFuture.failedFuture(new ConflictException(response.body()));
-            }*/ else {
+            } */ else {
                 return CompletableFuture.failedFuture(
                         new IllegalStateException(
                                 String.format(
@@ -60,6 +62,16 @@ public class AbstractHttpClientStub {
                 );
             }
         };
+    }
+
+    protected <E extends Exception> E getCauseAs(CompletionException e, Class<E> type) {
+        if (type.isAssignableFrom(e.getCause().getClass())) {
+            return type.cast(e.getCause());
+        } else if (e.getCause() instanceof RuntimeException) {
+            throw (RuntimeException) e.getCause();
+        } else {
+            throw e;
+        }
     }
 
     protected URI resourceUri(String resource) {

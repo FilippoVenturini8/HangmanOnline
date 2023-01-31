@@ -25,6 +25,7 @@ public class UserControllerImpl extends AbstractController implements UserContro
         try{
             UserApi api = getApi(context);
             var user = context.bodyAsClass(User.class);
+
             var futureResult = api.connectUser(user);
             asyncReplyWithoutBody(context, "application/json", futureResult);
         }/*catch (JsonParseException e){
@@ -33,6 +34,7 @@ public class UserControllerImpl extends AbstractController implements UserContro
         catch (Exception e){
             //TODO Aggiungere eccezione
             System.out.println("ERRORE POST USER IN USER CONTROLLER");
+            System.out.println(e);
         }
     }
 

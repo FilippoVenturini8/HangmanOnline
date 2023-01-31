@@ -1,5 +1,6 @@
 package client;
 
+import common.ConflictException;
 import common.Hangman;
 import common.User;
 
@@ -32,20 +33,31 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     @Override
-    public void connectUser(User user) {
+    public void connectUser(User user) throws ConflictException{
         try {
             connectUserAsync(user).join();
         } catch (CompletionException e) {
-            //TODO AGGIUNGERE ECCEZIONI
-            System.out.println("ECCEZIONE CONNECT USER LATO CLIENT");
+            throw getCauseAs(e, ConflictException.class);
         }
     }
 
     public static void main(String[] args) {
         HangmanClient client = new HangmanClient("localhost",port);
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Inserire un nickname: ");
-        User user = new User(scanner.nextLine());
-        client.connectUser(user);
+
+        boolean nickNameOk = false;
+
+        while (!nickNameOk){
+            System.out.println("Inserire un nickname: ");
+            User user = new User(scanner.nextLine());
+            try {
+                client.connectUser(user);
+                nickNameOk = true;
+            } catch (ConflictException e) {
+                System.out.println("Il nickname inserito è già in uso!");
+                nickNameOk = false;
+            }
+        }
+
     }
 }
