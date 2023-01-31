@@ -4,6 +4,8 @@ import common.Hangman;
 import io.javalin.http.Context;
 import webserver.utils.Filters;
 
+import java.util.concurrent.CompletableFuture;
+
 public abstract class AbstractController {
     private final String path;
 
@@ -22,6 +24,16 @@ public abstract class AbstractController {
 
     public String path(String subPath) {
         return this.path() + subPath;
+    }
+
+    protected <T> void asyncReplyWithBody(Context ctx, String contentType, CompletableFuture<T> futureResult) {
+        ctx.contentType(contentType);
+        ctx.future(() -> futureResult.thenAccept(ctx::json));
+    }
+
+    protected void asyncReplyWithoutBody(Context ctx, String contentType, CompletableFuture<?> futureResult) {
+        ctx.contentType(contentType);
+        ctx.future(() -> futureResult);
     }
 
 }

@@ -14,8 +14,18 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     }
 
     @Override
-    public CompletableFuture<User> connectUser(User user) {
-        //TODO implementare
-        return null;
+    public CompletableFuture<Void> connectUser(User user) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    try{
+                        storage().connectUser(user);
+                        return null;
+                    }catch (Exception e){
+                        //TODO aggiungere eccezione
+                        System.out.println("ERRORE CONNESSIONE UTENTE");
+                        return null;
+                    }
+                }
+        );
     }
 }

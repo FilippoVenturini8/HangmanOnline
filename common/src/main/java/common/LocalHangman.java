@@ -17,5 +17,6 @@ public class LocalHangman implements Hangman{
             //TODO AGGIUNGERE ECCEZIONE: NICKNAME GIA IN USO
         }
         users.add(copy);
+        System.out.println(users);
     }
 }
