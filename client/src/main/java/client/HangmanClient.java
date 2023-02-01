@@ -1,9 +1,6 @@
 package client;
 
-import common.ConflictException;
-import common.Hangman;
-import common.Lobby;
-import common.User;
+import common.*;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -81,19 +78,39 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         return getAllLobbiesAsync().join();
     }
 
+    private CompletableFuture<?> joinLobbyAsync(int idLobby, User user) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/lobbies/"+idLobby))
+                .header("Accept", "application/json")
+                .POST(body(user))
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(String.class));
+    }
+
+    @Override
+    public void joinLobby(int idLobby, User user) throws MissingException {
+        try {
+            joinLobbyAsync(idLobby, user).join();
+        } catch (CompletionException e) {
+            throw getCauseAs(e, MissingException.class);
+        }
+    }
+
     public static void main(String[] args) {
         HangmanClient client = new HangmanClient("localhost",port);
         Scanner scanner = new Scanner(System.in);
 
         boolean nickNameOk = false;
 
-        User user = null;
+        User actualUser = null;
 
         while (!nickNameOk){
             System.out.print("Inserire un nickname: ");
-            user = new User(scanner.nextLine());
+            actualUser = new User(scanner.nextLine());
             try {
-                client.connectUser(user);
+                client.connectUser(actualUser);
                 nickNameOk = true;
             } catch (ConflictException e) {
                 System.out.println("Il nickname inserito è già in uso!");
@@ -101,23 +118,45 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             }
         }
 
-        System.out.println("Selezionare l'opzione desiderata:");
+        System.out.println("\n######### MENU ##################");
         System.out.println("[1] Crea una lobby");
         System.out.println("[2] Visualizza la lista delle lobby");
+        System.out.println("###################################");
 
         String option = scanner.nextLine();
         int lobbyId;
 
         switch (option){
             case "1":
-                lobbyId = client.createLobby(user);
+                lobbyId = client.createLobby(actualUser);
                 System.out.println("Lobby creata correttamente, codice lobby: "+lobbyId);
-                break;
-            case "2":
-                List<Lobby> allLobbies = client.getAllLobbies();
-                for(Lobby lobby : allLobbies){
-                    System.out.println("Lobby: " + lobby.getId());
+                while (true){
+                    ; //TODO gioco
                 }
+                //break;
+            case "2":
+
+                boolean lobbyOk = false;
+
+                while (!lobbyOk){
+                    List<Lobby> allLobbies = client.getAllLobbies();
+                    for(Lobby lobby : allLobbies){
+                        System.out.println("Lobby: " + lobby.getId() + "(" + lobby.getConnectedUserNumber() + "/2)");
+                    }
+
+                    System.out.print("Inserisci il codice della lobby a cui vuoi connetterti: ");
+                    String lobbyIdToConnect = scanner.nextLine();
+
+                    try {
+                        client.joinLobby(Integer.valueOf(lobbyIdToConnect), actualUser);
+                        lobbyOk = true;
+                    }catch (MissingException e){
+                        System.out.println("La lobby selezionata non è presente.");
+                        lobbyOk = false;
+                    }
+                }
+
+                break;
         }
 
     }

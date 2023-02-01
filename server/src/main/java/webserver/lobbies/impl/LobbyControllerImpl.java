@@ -39,9 +39,20 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
     }
 
     @Override
+    public void joinLobby(Context context) throws HttpResponseException {
+        LobbyApi api = getApi(context);
+
+        var lobbyId = context.pathParam("{lobbyId}");
+        var user = context.bodyAsClass(User.class);
+        var futureResult = api.addUserToLobby(Integer.valueOf(lobbyId), user);
+        asyncReplyWithoutBody(context, "application/json", futureResult);
+    }
+
+    @Override
     public void registerRoutes(Javalin app) {
         app.before(path("*"), Filters.ensureClientAcceptsMimeType("application", "json"));
         app.post(path("/"), this::postLobby);
+        app.post(path("/{lobbyId}"), this::joinLobby);
         app.get(path("/"), this::getAllLobbies);
     }
 

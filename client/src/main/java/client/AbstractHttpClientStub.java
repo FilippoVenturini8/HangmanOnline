@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import common.ConflictException;
+import common.MissingException;
 import presentation.GsonUtils;
 
 import com.google.gson.Gson;
@@ -51,9 +52,9 @@ public class AbstractHttpClientStub {
             //TODO AGGIUNGERE ECCEZIONI GIUSTE
             /*else if (response.statusCode() == 401) { // unauthorized
                 return CompletableFuture.failedFuture(new WrongCredentialsException(response.body()));
-            } else if (response.statusCode() == 404) { // not found
+            } */else if (response.statusCode() == 404) { // not found
                 return CompletableFuture.failedFuture(new MissingException(response.body()));
-            } */ else {
+            } else {
                 return CompletableFuture.failedFuture(
                         new IllegalStateException(
                                 String.format(

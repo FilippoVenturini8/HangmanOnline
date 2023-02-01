@@ -32,4 +32,6 @@ public class Lobby {
     public int getId(){
         return this.id;
     }
+
+    public int getConnectedUserNumber(){ return this.users.size();}
 }

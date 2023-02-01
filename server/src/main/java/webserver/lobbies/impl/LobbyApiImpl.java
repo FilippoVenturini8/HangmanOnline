@@ -2,7 +2,9 @@ package webserver.lobbies.impl;
 
 import common.Hangman;
 import common.Lobby;
+import common.MissingException;
 import common.User;
+import io.javalin.http.NotFoundResponse;
 import webserver.AbstractApi;
 import webserver.lobbies.LobbyApi;
 
@@ -31,6 +33,20 @@ public class LobbyApiImpl extends AbstractApi implements LobbyApi {
                 () -> {
                     List<Lobby> allLobbies = storage().getAllLobbies();
                     return allLobbies;
+                }
+        );
+    }
+
+    @Override
+    public CompletableFuture<Void> addUserToLobby(int lobbyId, User user) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    try {
+                        storage().joinLobby(lobbyId, user);
+                        return null;
+                    }catch (MissingException e){
+                        throw  new NotFoundResponse();
+                    }
                 }
         );
     }

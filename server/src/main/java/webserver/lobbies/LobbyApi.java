@@ -15,6 +15,8 @@ public interface LobbyApi {
 
     CompletableFuture<List<Lobby>> getAllLobbies();
 
+    CompletableFuture<Void> addUserToLobby(int lobbyId, User user);
+
     static LobbyApi of(Hangman storage){
         return new LobbyApiImpl(storage);
     }

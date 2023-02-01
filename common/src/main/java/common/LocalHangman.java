@@ -37,4 +37,22 @@ public class LocalHangman implements Hangman{
     public List<Lobby> getAllLobbies() {
         return List.copyOf(this.lobbies);
     }
+
+    @Override
+    public void joinLobby(int idLobby, User user) throws MissingException{
+        boolean foundLobby = false;
+        int lobbyIndex = -1;
+        for(int i = 0; i < this.lobbies.size(); i++){
+            if(lobbies.get(i).getId() == idLobby){
+                foundLobby = true;
+                lobbyIndex = i;
+                break;
+            }
+        }
+        if(!foundLobby){
+            throw new MissingException("Lobby " + idLobby + " inesistente.");
+        }
+        //TODO AGGIUNGERE CONTROLLO CON ECCEZIONE SE è PIENA
+        this.lobbies.get(lobbyIndex).addUser(user);
+    }
 }
