@@ -155,10 +155,20 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             case "1":
                 lobbyId = client.createLobby(actualUser);
                 System.out.println("Lobby creata correttamente, codice lobby: "+lobbyId);
-                while (true){
-                    ; //TODO gioco
+                try {
+                    while (true){
+                        Lobby myLobby = client.getLobby(lobbyId);
+                        if(myLobby.isFull()){ //Si è connesso un altro giocatore
+                            break;
+                        }
+                        Thread.sleep(500);
+                    }
+                } catch (MissingException e) {
+                    System.out.println("Lobby "+ lobbyId + " inesistente.");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-                //break;
+                break;
             case "2":
 
                 boolean lobbyOk = false;
