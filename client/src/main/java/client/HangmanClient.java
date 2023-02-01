@@ -82,7 +82,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/lobbies/"+idLobby))
                 .header("Accept", "application/json")
-                .POST(body(user))
+                .PUT(body(user))
                 .build();
         return sendRequestToClient(request)
                 .thenComposeAsync(checkResponse())

@@ -39,7 +39,7 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
     }
 
     @Override
-    public void joinLobby(Context context) throws HttpResponseException {
+    public void putLobby(Context context) throws HttpResponseException {
         LobbyApi api = getApi(context);
 
         var lobbyId = context.pathParam("{lobbyId}");
@@ -52,7 +52,7 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
     public void registerRoutes(Javalin app) {
         app.before(path("*"), Filters.ensureClientAcceptsMimeType("application", "json"));
         app.post(path("/"), this::postLobby);
-        app.post(path("/{lobbyId}"), this::joinLobby);
+        app.put(path("/{lobbyId}"), this::putLobby);
         app.get(path("/"), this::getAllLobbies);
     }
 
