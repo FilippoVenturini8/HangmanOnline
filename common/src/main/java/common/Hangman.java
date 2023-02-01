@@ -9,5 +9,5 @@ public interface Hangman {
 
     List<Lobby> getAllLobbies();
 
-    void joinLobby(int idLobby, User user) throws MissingException;
+    void joinLobby(int idLobby, User user) throws MissingException, ConflictException;
 }

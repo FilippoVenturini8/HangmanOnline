@@ -90,11 +90,16 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     @Override
-    public void joinLobby(int idLobby, User user) throws MissingException {
+    public void joinLobby(int idLobby, User user) throws MissingException, ConflictException {
         try {
             joinLobbyAsync(idLobby, user).join();
         } catch (CompletionException e) {
-            throw getCauseAs(e, MissingException.class);
+            if(e.getCause() instanceof MissingException){
+                throw getCauseAs(e, MissingException.class);
+            }
+            if(e.getCause() instanceof ConflictException){
+                throw getCauseAs(e, ConflictException.class);
+            }
         }
     }
 
@@ -152,6 +157,9 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         lobbyOk = true;
                     }catch (MissingException e){
                         System.out.println("La lobby selezionata non è presente.");
+                        lobbyOk = false;
+                    }catch (ConflictException e){
+                        System.out.println("La lobby selezionata è piena.");
                         lobbyOk = false;
                     }
                 }

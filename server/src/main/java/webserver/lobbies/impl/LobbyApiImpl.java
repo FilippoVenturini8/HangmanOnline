@@ -1,9 +1,7 @@
 package webserver.lobbies.impl;
 
-import common.Hangman;
-import common.Lobby;
-import common.MissingException;
-import common.User;
+import common.*;
+import io.javalin.http.ConflictResponse;
 import io.javalin.http.NotFoundResponse;
 import webserver.AbstractApi;
 import webserver.lobbies.LobbyApi;
@@ -45,7 +43,9 @@ public class LobbyApiImpl extends AbstractApi implements LobbyApi {
                         storage().joinLobby(lobbyId, user);
                         return null;
                     }catch (MissingException e){
-                        throw  new NotFoundResponse();
+                        throw new NotFoundResponse();
+                    }catch (ConflictException e){
+                        throw new ConflictResponse();
                     }
                 }
         );
