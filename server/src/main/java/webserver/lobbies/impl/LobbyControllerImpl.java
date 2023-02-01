@@ -39,6 +39,15 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
     }
 
     @Override
+    public void getLobby(Context context) throws HttpResponseException {
+        LobbyApi api = getApi(context);
+
+        var lobbyId = context.pathParam("{lobbyId}");
+        var futureResult = api.getLobby(Integer.valueOf(lobbyId));
+        asyncReplyWithoutBody(context, "application/json", futureResult);
+    }
+
+    @Override
     public void putLobby(Context context) throws HttpResponseException {
         LobbyApi api = getApi(context);
 
@@ -54,6 +63,8 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
         app.post(path("/"), this::postLobby);
         app.put(path("/{lobbyId}"), this::putLobby);
         app.get(path("/"), this::getAllLobbies);
+        app.get(path("/{lobbyId}"), this::getLobby);
+
     }
 
 

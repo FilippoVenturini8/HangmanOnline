@@ -13,6 +13,8 @@ public interface LobbyController extends Controller {
 
     void getAllLobbies(Context context) throws HttpResponseException;
 
+    void getLobby(Context context) throws HttpResponseException;
+
     void putLobby(Context context) throws HttpResponseException;
 
     static LobbyController of(String root) {

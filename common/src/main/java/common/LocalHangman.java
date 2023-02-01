@@ -34,12 +34,7 @@ public class LocalHangman implements Hangman{
     }
 
     @Override
-    public List<Lobby> getAllLobbies() {
-        return List.copyOf(this.lobbies);
-    }
-
-    @Override
-    public void joinLobby(int idLobby, User user) throws MissingException, ConflictException{
+    public Lobby getLobby(int idLobby) throws MissingException{
         boolean foundLobby = false;
         int lobbyIndex = -1;
         for(int i = 0; i < this.lobbies.size(); i++){
@@ -50,11 +45,23 @@ public class LocalHangman implements Hangman{
             }
         }
         if(!foundLobby){
-            throw new MissingException("Lobby " + idLobby + " inesistente.");
+            throw new MissingException("La lobby con codice " + idLobby + " è inesistente.");
         }
-        if(this.lobbies.get(lobbyIndex).isFull()){
+        return this.lobbies.get(lobbyIndex);
+    }
+
+    @Override
+    public List<Lobby> getAllLobbies() {
+        return List.copyOf(this.lobbies);
+    }
+
+    @Override
+    public void joinLobby(int idLobby, User user) throws MissingException, ConflictException{
+        Lobby lobby = this.getLobby(idLobby); //Se non è presente la lobby viene generata una MissingException qui
+
+        if(lobby.isFull()){
             throw new ConflictException("Lobby " + idLobby + " piena.");
         }
-        this.lobbies.get(lobbyIndex).addUser(user);
+        lobby.addUser(user);
     }
 }

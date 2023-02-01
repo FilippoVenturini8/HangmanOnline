@@ -13,6 +13,8 @@ import java.util.concurrent.CompletableFuture;
 public interface LobbyApi {
     CompletableFuture<Integer> createLobby(User user);
 
+    CompletableFuture<Lobby> getLobby(int idLobby);
+
     CompletableFuture<List<Lobby>> getAllLobbies();
 
     CompletableFuture<Void> addUserToLobby(int lobbyId, User user);

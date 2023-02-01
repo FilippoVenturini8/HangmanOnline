@@ -26,6 +26,19 @@ public class LobbyApiImpl extends AbstractApi implements LobbyApi {
     }
 
     @Override
+    public CompletableFuture<Lobby> getLobby(int idLobby) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    try {
+                        return storage().getLobby(idLobby);
+                    }catch (MissingException e){
+                        throw new NotFoundResponse();
+                    }
+                }
+        );
+    }
+
+    @Override
     public CompletableFuture<List<Lobby>> getAllLobbies() {
         return CompletableFuture.supplyAsync(
                 () -> {

@@ -62,6 +62,26 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
+    private CompletableFuture<Lobby> getLobbyAsync(int idLobby) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/lobbies/"+idLobby))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(Lobby.class));
+    }
+
+    @Override
+    public Lobby getLobby(int idLobby) throws MissingException{
+        try {
+            return getLobbyAsync(idLobby).join();
+        } catch (CompletionException e) {
+            throw getCauseAs(e, MissingException.class);
+        }
+    }
+
     private CompletableFuture<List<Lobby>> getAllLobbiesAsync() {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/lobbies"))
