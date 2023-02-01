@@ -32,4 +32,9 @@ public class LocalHangman implements Hangman{
         System.out.println("Lobby creata!");
         return newLobby.getId();
     }
+
+    @Override
+    public List<Lobby> getAllLobbies() {
+        return List.copyOf(this.lobbies);
+    }
 }

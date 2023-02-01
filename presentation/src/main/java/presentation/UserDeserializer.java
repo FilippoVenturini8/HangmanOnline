@@ -19,7 +19,7 @@ public class UserDeserializer implements JsonDeserializer<User> {
     public User deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         var object = json.getAsJsonObject();
         var nickName = getPropertyAsString(object, "nickname");
-
+        //TODO FORSE AGGIUNGERE LA CLASS CAST EXCEPTION
         return new User(nickName);
     }
 }

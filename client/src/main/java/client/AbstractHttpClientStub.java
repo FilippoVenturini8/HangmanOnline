@@ -1,5 +1,7 @@
 package client;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import common.ConflictException;
 import presentation.GsonUtils;
@@ -11,6 +13,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -93,6 +97,28 @@ public class AbstractHttpClientStub {
                 promise.complete(gson.fromJson(toBeDeserialized, type));
             } catch (JsonParseException e) {
                 promise.completeExceptionally(e);
+            }
+            return promise;
+        };
+    }
+
+    protected <T> Function<String, CompletableFuture<List<T>>> deserializeMany(Class<T> type) {
+        return toBeDeserialized -> {
+            CompletableFuture<List<T>> promise = new CompletableFuture<>();
+            try {
+                JsonElement jsonElement = gson.fromJson(toBeDeserialized, JsonElement.class);
+                if (jsonElement.isJsonArray()) {
+                    JsonArray jsonArray = jsonElement.getAsJsonArray();
+                    List<T> items = new ArrayList<>(jsonArray.size());
+                    for (JsonElement item : jsonArray) {
+                        items.add(gson.fromJson(item, type));
+                    }
+                    promise.complete(items);
+                } else {
+                    promise.completeExceptionally(new IllegalStateException("Cannot deserialize: " + toBeDeserialized));
+                }
+            } catch (JsonParseException e) {
+                promise.completeExceptionally(new IllegalStateException(e));
             }
             return promise;
         };
