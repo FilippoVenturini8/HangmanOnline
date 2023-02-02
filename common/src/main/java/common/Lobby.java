@@ -9,6 +9,8 @@ public class Lobby {
 
     private List<User> users = new ArrayList<>();
 
+    private Game game;
+
     public Lobby(int id){
         this.id = id;
     }
@@ -34,4 +36,8 @@ public class Lobby {
     }
 
     public int getConnectedUserNumber(){ return this.users.size();}
+
+    public void setGame(Game game){
+        this.game = game;
+    }
 }

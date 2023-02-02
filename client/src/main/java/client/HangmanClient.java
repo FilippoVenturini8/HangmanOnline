@@ -40,11 +40,31 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
-    private CompletableFuture<Integer> createLobbyAsync(User user) {
+    private CompletableFuture<User> findUserAsync(String nicknameUser){
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/users/"+nicknameUser))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(User.class));
+    }
+
+    @Override
+    public User findUser(String nicknameUser) throws MissingException {
+        try {
+            return findUserAsync(nicknameUser).join();
+        } catch (CompletionException e) {
+            throw getCauseAs(e, MissingException.class);
+        }
+    }
+
+    private CompletableFuture<Integer> createLobbyAsync(String nicknameUser) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/lobbies"))
                 .header("Accept", "application/json")
-                .POST(body(user))
+                .POST(body(nicknameUser))
                 .build();
         return sendRequestToClient(request)
                 .thenComposeAsync(checkResponse())
@@ -52,13 +72,11 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     @Override
-    public int createLobby(User user) {
+    public int createLobby(String nicknameUser) throws MissingException{
         try {
-            return createLobbyAsync(user).join();
+            return createLobbyAsync(nicknameUser).join();
         } catch (CompletionException e) {
-            //throw getCauseAs(e, ConflictException.class);
-            //TODO AGGIUNGERE ECCEZIONE
-            return -1;
+            throw getCauseAs(e, MissingException.class);
         }
     }
 
@@ -96,6 +114,26 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     @Override
     public List<Lobby> getAllLobbies() {
         return getAllLobbiesAsync().join();
+    }
+
+    private CompletableFuture<?> startGameAsync(int idLobby, Game game) throws MissingException{
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/games/"+idLobby))
+                .header("Accept", "application/json")
+                .POST(body(game))
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(String.class));
+    }
+
+    @Override
+    public void startGame(int idLobby, Game game) throws MissingException {
+        try {
+            startGameAsync(idLobby, game);
+        }catch (CompletionException e) {
+            throw getCauseAs(e, MissingException.class);
+        }
     }
 
     private CompletableFuture<?> joinLobbyAsync(int idLobby, User user) {
@@ -153,7 +191,11 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
         switch (option){
             case "1":
-                lobbyId = client.createLobby(actualUser);
+                try {
+                    lobbyId = client.createLobby(actualUser.getNickName());
+                } catch (MissingException e) {
+                    throw new RuntimeException(e);
+                }
                 System.out.println("Lobby creata correttamente, codice lobby: "+lobbyId);
                 try {
                     while (true){
@@ -172,6 +214,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             case "2":
 
                 boolean lobbyOk = false;
+                String lobbyIdToConnect = null;
 
                 while (!lobbyOk){
                     List<Lobby> allLobbies = client.getAllLobbies();
@@ -180,7 +223,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     }
 
                     System.out.print("Inserisci il codice della lobby a cui vuoi connetterti: ");
-                    String lobbyIdToConnect = scanner.nextLine();
+                    lobbyIdToConnect = scanner.nextLine();
 
                     try {
                         client.joinLobby(Integer.valueOf(lobbyIdToConnect), actualUser);
@@ -192,6 +235,12 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         System.out.println("La lobby selezionata è piena.");
                         lobbyOk = false;
                     }
+                }
+
+                try {
+                    client.startGameAsync(Integer.valueOf(lobbyIdToConnect), new Game());
+                } catch (MissingException e) {
+                    throw new RuntimeException(e);
                 }
 
                 break;

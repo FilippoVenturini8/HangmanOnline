@@ -25,8 +25,26 @@ public class LocalHangman implements Hangman{
     }
 
     @Override
-    public int createLobby(User user) {
+    public User findUser(String nicknameUser) throws MissingException {
+        boolean foundUser = false;
+        int userIndex = -1;
+        for(int i = 0; i < this.users.size(); i++){
+            if(users.get(i).getNickName().equals(nicknameUser)){
+                foundUser = true;
+                userIndex = i;
+                break;
+            }
+        }
+        if(!foundUser){
+            throw new MissingException("L'utente con nickname " + nicknameUser + " è inesistente.");
+        }
+        return this.users.get(userIndex);
+    }
+
+    @Override
+    public int createLobby(String nicknameUser) throws MissingException{
         Lobby newLobby = new Lobby(lobbiesCounter++);
+        User user = this.findUser(nicknameUser);
         newLobby.addUser(user);
         lobbies.add(newLobby);
         System.out.println("Lobby creata!");
@@ -53,6 +71,14 @@ public class LocalHangman implements Hangman{
     @Override
     public List<Lobby> getAllLobbies() {
         return List.copyOf(this.lobbies);
+    }
+
+    @Override
+    public void startGame(int idLobby, Game game) throws MissingException {
+        Lobby lobby = this.getLobby(idLobby);
+        game.setUsers(lobby.getUsers());
+        game.setRndGameRoles();
+        lobby.setGame(game);
     }
 
     @Override

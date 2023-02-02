@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface LobbyApi {
-    CompletableFuture<Integer> createLobby(User user);
+    CompletableFuture<Integer> createLobby(String nicknameUser);
 
     CompletableFuture<Lobby> getLobby(int idLobby);
 

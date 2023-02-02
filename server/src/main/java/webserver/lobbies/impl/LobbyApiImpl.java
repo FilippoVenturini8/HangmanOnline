@@ -15,12 +15,16 @@ public class LobbyApiImpl extends AbstractApi implements LobbyApi {
         super(storage);
     }
     @Override
-    public CompletableFuture<Integer> createLobby(User user) {
+    public CompletableFuture<Integer> createLobby(String nicknameUser) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    Integer lobbyId = storage().createLobby(user);
-                    return lobbyId;
-                    //TODO forse ci vanno eccezioni
+                    Integer lobbyId = null;
+                    try {
+                        lobbyId = storage().createLobby(nicknameUser);
+                        return lobbyId;
+                    } catch (MissingException e) {
+                        throw new NotFoundResponse();
+                    }
                 }
         );
     }

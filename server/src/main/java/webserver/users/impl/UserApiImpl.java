@@ -2,8 +2,10 @@ package webserver.users.impl;
 
 import common.ConflictException;
 import common.Hangman;
+import common.MissingException;
 import common.User;
 import io.javalin.http.ConflictResponse;
+import io.javalin.http.NotFoundResponse;
 import webserver.AbstractApi;
 import webserver.users.UserApi;
 
@@ -28,6 +30,19 @@ public class UserApiImpl extends AbstractApi implements UserApi {
                         //TODO aggiungere eccezione
                         System.out.println("ERRORE CONNESSIONE UTENTE");
                         return null;
+                    }
+                }
+        );
+    }
+
+    @Override
+    public CompletableFuture<User> findUser(String nicknameUser) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    try {
+                       return storage().findUser(nicknameUser);
+                    }catch (MissingException e){
+                        throw new NotFoundResponse();
                     }
                 }
         );

@@ -15,7 +15,7 @@ public interface LobbyController extends Controller {
 
     void getLobby(Context context) throws HttpResponseException;
 
-    void putLobby(Context context) throws HttpResponseException;
+    void putUserInLobby(Context context) throws HttpResponseException;
 
     static LobbyController of(String root) {
         return new LobbyControllerImpl(root);

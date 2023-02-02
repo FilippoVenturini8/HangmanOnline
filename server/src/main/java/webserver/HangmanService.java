@@ -3,6 +3,7 @@ import common.Hangman;
 import common.LocalHangman;
 import io.javalin.Javalin;
 import presentation.GsonUtils;
+import webserver.games.GameController;
 import webserver.lobbies.LobbyController;
 import webserver.users.UserController;
 import webserver.utils.Filters;
@@ -33,6 +34,7 @@ public class HangmanService {
 
         UserController.of(path("/users")).registerRoutes(server);
         LobbyController.of(path("/lobbies")).registerRoutes(server);
+        GameController.of(path("/games")).registerRoutes(server);
     }
 
     public void start(){server.start(port);}
