@@ -245,6 +245,24 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
                 break;
         }
-
     }
+
+    private void inGame(HangmanClient client, User actualUser) {
+        try {
+            GameRole myRole = client.findUser(actualUser.getNickName()).getGameRole();
+
+            switch (myRole){
+                case CHOOSER:
+
+                    break;
+                case GUESSER:
+
+                    break;
+            }
+
+        } catch (MissingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
