@@ -13,6 +13,7 @@ public class UserSerializer implements JsonSerializer<User> {
     public JsonElement serialize(User src, Type typeOfSrc, JsonSerializationContext context) {
         var object = new JsonObject();
         object.addProperty("nickname", src.getNickName());
+        object.add("gameRole", context.serialize(src.getGameRole()));
         return object;
     }
 }

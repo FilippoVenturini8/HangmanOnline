@@ -2,6 +2,7 @@ package presentation;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import common.GameRole;
 import common.Lobby;
 import common.User;
 
@@ -15,6 +16,8 @@ public class GsonUtils {
                 .registerTypeAdapter(User.class, new UserDeserializer())
                 .registerTypeAdapter(Lobby.class, new LobbySerializer())
                 .registerTypeAdapter(Lobby.class, new LobbyDeserializer())
+                .registerTypeAdapter(GameRole.class, new GameRoleSerializer())
+                .registerTypeAdapter(GameRole.class, new GameRoleDeserializer())
                 .create();
     }
 }

@@ -1,6 +1,7 @@
 package presentation;
 
 import com.google.gson.*;
+import common.GameRole;
 import common.User;
 
 import java.lang.reflect.Type;
@@ -15,11 +16,21 @@ public class UserDeserializer implements JsonDeserializer<User> {
         return null;
     }
 
+    private <T> T getPropertyAs(JsonObject object, String name, Class<T> type, JsonDeserializationContext context) {
+        if (object.has(name)) {
+            JsonElement value = object.get(name);
+            if (value.isJsonNull()) return null;
+            return context.deserialize(value, type);
+        }
+        return null;
+    }
+
     @Override
     public User deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         var object = json.getAsJsonObject();
         var nickName = getPropertyAsString(object, "nickname");
+        GameRole gameRole = getPropertyAs(object, "gameRole", GameRole.class, context);
         //TODO FORSE AGGIUNGERE LA CLASS CAST EXCEPTION
-        return new User(nickName);
+        return new User(nickName, gameRole);
     }
 }
