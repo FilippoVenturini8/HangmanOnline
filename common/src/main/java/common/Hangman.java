@@ -9,6 +9,8 @@ public interface Hangman {
 
     int createLobby(String nicknameUser) throws MissingException;
 
+    void joinLobby(int idLobby, String nicknameUser) throws MissingException, ConflictException;
+
     Lobby getLobby(int idLobby) throws MissingException;
 
     List<Lobby> getAllLobbies();
@@ -19,5 +21,6 @@ public interface Hangman {
 
     Game getGame(int idLobby) throws MissingException;
 
-    void joinLobby(int idLobby, String nicknameUser) throws MissingException, ConflictException;
+    Boolean tryToGuess(int idLobby, String attempt) throws MissingException;
+
 }

@@ -15,6 +15,8 @@ public interface GameApi {
 
     CompletableFuture<Game> getGame(int idLobby);
 
+    CompletableFuture<Boolean> tryToGuess(int idLobby, String attempt);
+
     static GameApi of(Hangman storage){
         return new GameApiImpl(storage);
     }

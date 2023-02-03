@@ -81,6 +81,31 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
+    private CompletableFuture<?> joinLobbyAsync(int idLobby, String nicknameUser) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/lobbies/"+idLobby))
+                .header("Accept", "application/json")
+                .PUT(body(nicknameUser))
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(String.class));
+    }
+
+    @Override
+    public void joinLobby(int idLobby, String nicknameUser) throws MissingException, ConflictException {
+        try {
+            joinLobbyAsync(idLobby, nicknameUser).join();
+        } catch (CompletionException e) {
+            if(e.getCause() instanceof MissingException){
+                throw getCauseAs(e, MissingException.class);
+            }
+            if(e.getCause() instanceof ConflictException){
+                throw getCauseAs(e, ConflictException.class);
+            }
+        }
+    }
+
     private CompletableFuture<Lobby> getLobbyAsync(int idLobby) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/lobbies/"+idLobby))
@@ -191,30 +216,28 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
-    private CompletableFuture<?> joinLobbyAsync(int idLobby, String nicknameUser) {
+    private CompletableFuture<Boolean> tryToGuessAsync(int idLobby, String attempt){
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUri("/lobbies/"+idLobby))
+                .uri(resourceUri("/games/attempt/"+idLobby))
                 .header("Accept", "application/json")
-                .PUT(body(nicknameUser))
+                .PUT(body(attempt))
                 .build();
         return sendRequestToClient(request)
                 .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeOne(String.class));
+                .thenComposeAsync(deserializeOne(Boolean.class));
     }
 
     @Override
-    public void joinLobby(int idLobby, String nicknameUser) throws MissingException, ConflictException {
+    public Boolean tryToGuess(int idLobby, String attempt) throws MissingException {
         try {
-            joinLobbyAsync(idLobby, nicknameUser).join();
-        } catch (CompletionException e) {
-            if(e.getCause() instanceof MissingException){
-                throw getCauseAs(e, MissingException.class);
-            }
-            if(e.getCause() instanceof ConflictException){
-                throw getCauseAs(e, ConflictException.class);
-            }
+            return tryToGuessAsync(idLobby, attempt).join();
+        }catch (CompletionException e){
+            return null;
+            //TODO ECCEZIONE?
         }
     }
+
+
 
     public static void main(String[] args) {
         HangmanClient client = new HangmanClient("localhost",port);
@@ -317,14 +340,30 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     System.out.println(encodedToGuess);
                     break;
                 case GUESSER:
+                    Game game = null;
                     while (encodedToGuess == null || encodedToGuess.equals("")){
-                        Game game = this.getGame(idLobby);
+                        game = this.getGame(idLobby);
                         encodedToGuess = game.getEncodedWordToGuess();
                         Thread.sleep(500);
                     }
                     System.out.println("DA INDOVINARE: \n");
                     System.out.println(encodedToGuess);
-                    break;
+
+                    while(true){ //Game loop
+                        System.out.print("Prova a indovinare: ");
+                        String attempt = scanner.nextLine();
+                        boolean guessed = this.tryToGuess(idLobby, attempt);
+                        game = this.getGame(idLobby);
+
+                        if(guessed){
+                            System.out.println("INDOVINATO");
+                        }else{
+                            System.out.println("ERRORE! Tentativi: "+game.getAttempts());
+                        }
+                        System.out.println(game.getEncodedWordToGuess());
+                    }
+
+                   // break;
             }
 
         } catch (MissingException e) {

@@ -22,7 +22,7 @@ public class Game {
 
     public String getWordToGuess(){ return this.wordToGuess;}
 
-    public void setWordToGuess(String wordToGuess){this.wordToGuess = wordToGuess;}
+    public void setWordToGuess(String wordToGuess){this.wordToGuess = wordToGuess.toLowerCase();}
 
     public String getEncodedWordToGuess() {
         return encodedWordToGuess;
@@ -38,6 +38,35 @@ public class Game {
                 this.encodedWordToGuess += '-';
             }
         }
+    }
+
+    public boolean tryToGuess(String attempt){
+        boolean guessedSomething = false;
+        if(attempt.length() == 1){ //Only one letter
+            char attemptLetter = attempt.toLowerCase().charAt(0);
+            for(int i = 0; i < this.wordToGuess.length(); i++){
+                if(attemptLetter == this.wordToGuess.charAt(i)){
+                    if(i == this.encodedWordToGuess.length()-1){ //Last character
+                        this.encodedWordToGuess = this.encodedWordToGuess.substring(0,i) + attemptLetter;
+                    }else{
+                        this.encodedWordToGuess = this.encodedWordToGuess.substring(0,i) + attemptLetter + this.encodedWordToGuess.substring(i+1);
+                    }
+                    guessedSomething = true;
+                }
+            }
+            if(!guessedSomething){
+                this.attempts--;
+            }
+
+        }else{ //The entire word
+            if(!this.wordToGuess.equals(attempt.toLowerCase())){
+                this.attempts--;
+            }else {
+                guessedSomething = true;
+                this.encodedWordToGuess = this.wordToGuess;
+            }
+        }
+        return guessedSomething;
     }
 
     public void setRndGameRoles(List<User>users){

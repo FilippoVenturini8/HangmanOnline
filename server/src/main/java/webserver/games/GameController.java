@@ -14,6 +14,8 @@ public interface GameController extends Controller {
 
     void getGame(Context context) throws HttpResponseException;
 
+    void putGuessAttempt(Context context) throws HttpResponseException;
+
     static GameController of(String root) {
         return new GameControllerImpl(root);
     }
