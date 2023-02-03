@@ -28,7 +28,7 @@ public class Lobby {
     }
 
     public List<User> getUsers(){
-        return List.copyOf(users);
+        return this.users;
     }
 
     public int getId(){
@@ -40,4 +40,6 @@ public class Lobby {
     public void setGame(Game game){
         this.game = game;
     }
+
+    public Game getGame(){return this.game;}
 }

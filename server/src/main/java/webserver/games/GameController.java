@@ -10,6 +10,8 @@ import webserver.lobbies.impl.LobbyControllerImpl;
 public interface GameController extends Controller {
     void postGame(Context context) throws HttpResponseException;
 
+    void putWordToGuess(Context context) throws HttpResponseException;
+
     static GameController of(String root) {
         return new GameControllerImpl(root);
     }

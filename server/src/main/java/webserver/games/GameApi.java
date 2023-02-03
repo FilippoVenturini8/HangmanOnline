@@ -11,6 +11,8 @@ import java.util.concurrent.CompletableFuture;
 public interface GameApi {
     CompletableFuture<Void> startGame(int idLobby, Game game);
 
+    CompletableFuture<String> setWordToGuess(int idLobby, String toGuess);
+
     static GameApi of(Hangman storage){
         return new GameApiImpl(storage);
     }

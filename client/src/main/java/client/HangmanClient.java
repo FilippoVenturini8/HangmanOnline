@@ -116,7 +116,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         return getAllLobbiesAsync().join();
     }
 
-    private CompletableFuture<?> startGameAsync(int idLobby, Game game) throws MissingException{
+    private CompletableFuture<?> startGameAsync(int idLobby, Game game){
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/games/"+idLobby))
                 .header("Accept", "application/json")
@@ -130,9 +130,31 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     @Override
     public void startGame(int idLobby, Game game) throws MissingException {
         try {
-            startGameAsync(idLobby, game);
+            startGameAsync(idLobby, game).join();
         }catch (CompletionException e) {
             throw getCauseAs(e, MissingException.class);
+        }
+    }
+
+    private CompletableFuture<String> setWordToGuessAsync(int idLobby, String toGuess){
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/games/"+idLobby))
+                .header("Accept", "application/json")
+                .PUT(body(toGuess))
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(String.class));
+    }
+
+    @Override
+    public String setWordToGuess(int idLobby, String toGuess) {
+        try {
+           return setWordToGuessAsync(idLobby, toGuess).join();
+        }catch (CompletionException e) {
+            //throw getCauseAs(e, MissingException.class);
+            return "";
+            //TODO ECCEZIONE?
         }
     }
 
@@ -200,11 +222,12 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 try {
                     while (true){
                         Lobby myLobby = client.getLobby(lobbyId);
-                        if(myLobby.isFull()){ //Si è connesso un altro giocatore
+                        if(myLobby.isFull()){ //Another player is connected
                             break;
                         }
                         Thread.sleep(500);
                     }
+                    client.inGame(actualUser, lobbyId); //Enter the game
                 } catch (MissingException e) {
                     System.out.println("Lobby "+ lobbyId + " inesistente.");
                 } catch (InterruptedException e) {
@@ -238,7 +261,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 }
 
                 try {
-                    client.startGameAsync(Integer.valueOf(lobbyIdToConnect), new Game());
+                    client.startGame(Integer.valueOf(lobbyIdToConnect), new Game());
                 } catch (MissingException e) {
                     throw new RuntimeException(e);
                 }
@@ -247,13 +270,16 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
-    private void inGame(HangmanClient client, User actualUser) {
+    private void inGame(User actualUser, int idLobby) {
+        Scanner scanner = new Scanner(System.in);
         try {
-            GameRole myRole = client.findUser(actualUser.getNickName()).getGameRole();
-
+            GameRole myRole = this.findUser(actualUser.getNickName()).getGameRole();
             switch (myRole){
                 case CHOOSER:
-
+                    System.out.print("Parola da far indovinare: ");
+                    String toGuess = scanner.nextLine();
+                    String encodedToGuess = this.setWordToGuess(idLobby, toGuess);
+                    System.out.println(encodedToGuess);
                     break;
                 case GUESSER:
 

@@ -33,8 +33,19 @@ public class GameControllerImpl extends AbstractController implements GameContro
     }
 
     @Override
+    public void putWordToGuess(Context context) throws HttpResponseException {
+        GameApi api = getApi(context);
+
+        var toGuess = context.bodyAsClass(String.class);
+        var idLobby = context.pathParam("{lobbyId}");
+        var futureResult = api.setWordToGuess(Integer.parseInt(idLobby), toGuess);
+        asyncReplyWithBody(context, "application/json", futureResult);
+    }
+
+    @Override
     public void registerRoutes(Javalin app) {
         app.before(path("*"), Filters.ensureClientAcceptsMimeType("application", "json"));
         app.post(path("/{lobbyId}"), this::postGame);
+        app.put(path("/{lobbyId}"),this::putWordToGuess);
     }
 }

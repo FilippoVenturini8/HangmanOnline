@@ -76,9 +76,17 @@ public class LocalHangman implements Hangman{
     @Override
     public void startGame(int idLobby, Game game) throws MissingException {
         Lobby lobby = this.getLobby(idLobby);
-        game.setUsers(lobby.getUsers());
-        game.setRndGameRoles();
+        game.setRndGameRoles(lobby.getUsers());
         lobby.setGame(game);
+    }
+
+    @Override
+    public String setWordToGuess(int idLobby, String toGuess) throws MissingException {
+        Lobby lobby = this.getLobby(idLobby);
+        Game game = lobby.getGame();
+        game.setWordToGuess(toGuess);
+        game.encodeWordToGuess();
+        return game.getEncodedWordToGuess();
     }
 
     @Override

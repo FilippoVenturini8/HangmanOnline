@@ -3,20 +3,14 @@ package common;
 import java.util.List;
 
 public class Game {
-    private List<User> users;
 
     private int round = 1;
 
     private String wordToGuess;
 
-    private String encodedWordToGuess;
+    private String encodedWordToGuess = "";
 
     public Game (){}
-    public Game(List<User> users){
-        this.users = users;
-    }
-
-    public void setUsers(List<User> users){this.users = users;}
 
     public int getRound(){
         return this.round;
@@ -40,7 +34,7 @@ public class Game {
         }
     }
 
-    public void setRndGameRoles(){
+    public void setRndGameRoles(List<User>users){
         long rnd = Math.round(Math.random());
 
         if(rnd == 0){
