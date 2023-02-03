@@ -248,8 +248,6 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
         User actualUser = null;
 
-       System.out.println(HangmanGraphics.FIVE_ERROR);
-
         while (!nickNameOk){
             System.out.print("Inserire un nickname: ");
             actualUser = new User(scanner.nextLine());
@@ -360,15 +358,16 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     System.out.println(encodedToGuess);
 
                     while(true){ //Game loop
-                        System.out.print("Prova a indovinare: ");
+                        System.out.print("Inserire una lettera o una parola: ");
                         String attempt = scanner.nextLine();
                         boolean guessed = this.tryToGuess(idLobby, attempt);
                         game = this.getGame(idLobby);
 
                         if(guessed){
-                            System.out.println("INDOVINATO");
+                            printHangman(game.getAttempts());
                         }else{
-                            System.out.println("ERRORE! Tentativi: "+game.getAttempts());
+                            System.out.println("Tentativi rimasti: "+game.getAttempts());
+                            printHangman(game.getAttempts());
                         }
                         System.out.println(game.getEncodedWordToGuess());
                     }
@@ -380,6 +379,28 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void printHangman(int attempts){
+        switch (attempts){
+            case 4:
+                System.out.println(HangmanGraphics.FOUR_ATTEMPTS);
+                break;
+            case 3:
+                System.out.println(HangmanGraphics.THREE_ATTEMPTS);
+                break;
+            case 2:
+                System.out.println(HangmanGraphics.TWO_ATTEMPTS);
+                break;
+            case 1:
+                System.out.println(HangmanGraphics.ONE_ATTEMPTS);
+                break;
+            case 0:
+                System.out.println(HangmanGraphics.ZERO_ATTEMPTS);
+                break;
+            default:
+                break;
         }
     }
 

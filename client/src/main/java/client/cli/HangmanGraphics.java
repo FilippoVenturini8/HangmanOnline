@@ -1,11 +1,9 @@
 package client.cli;
 
 public class HangmanGraphics {
-    public static String ONE_ERROR = "--------------";
-    public static String TWO_ERROR = "\t|----\n" + "\t|\n" + "\t|\n" + "\t|\n" + "\t|\n" + "\t|\n" + ONE_ERROR;
-    public static String THREE_ERROR = "\t|----|\n" + "\t|    0\n" + "\t|\n" + "\t|\n" + "\t|\n" + "\t|\n" + ONE_ERROR;
-    public static String FOUR_ERROR = "\t|----|\n" + "\t|    0\n" + "\t|   /|\\\n" + "\t|\n" + "\t|\n" + "\t|\n" + ONE_ERROR;
-    public static String FIVE_ERROR = "\t|----|\n" + "\t|    0\n" + "\t|   /|\\\n" + "\t|   / \\\n" + "\t|\n" + "\t|\n" + ONE_ERROR;
-
-
+    public static String FOUR_ATTEMPTS = "--------------";
+    public static String THREE_ATTEMPTS = "\t|----\n" + "\t|\n" + "\t|\n" + "\t|\n" + "\t|\n" + "\t|\n" + FOUR_ATTEMPTS;
+    public static String TWO_ATTEMPTS = "\t|----|\n" + "\t|    0\n" + "\t|\n" + "\t|\n" + "\t|\n" + "\t|\n" + FOUR_ATTEMPTS;
+    public static String ONE_ATTEMPTS = "\t|----|\n" + "\t|    0\n" + "\t|   /|\\\n" + "\t|\n" + "\t|\n" + "\t|\n" + FOUR_ATTEMPTS;
+    public static String ZERO_ATTEMPTS = "\t|----|\n" + "\t|    0\n" + "\t|   /|\\\n" + "\t|   / \\\n" + "\t|\n" + "\t|\n" + FOUR_ATTEMPTS;
 }
