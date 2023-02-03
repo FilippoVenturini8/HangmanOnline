@@ -346,7 +346,20 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     String toGuess = scanner.nextLine();
                     encodedToGuess = this.setWordToGuess(idLobby, toGuess);
                     System.out.println(encodedToGuess);
-                    break;
+
+                    int actualAttempts = this.getGame(idLobby).getAttempts();
+
+                    while (true){
+                        Game game = this.getGame(idLobby);
+                        if(!game.getEncodedWordToGuess().equals(encodedToGuess) || actualAttempts != game.getAttempts()){
+                            printHangman(game.getAttempts());
+                            System.out.println(game.getEncodedWordToGuess());
+                            encodedToGuess = game.getEncodedWordToGuess();
+                            actualAttempts = game.getAttempts();
+                        }
+                        Thread.sleep(500);
+                    }
+                    //break;
                 case GUESSER:
                     Game game = null;
                     while (encodedToGuess == null || encodedToGuess.equals("")){
@@ -364,9 +377,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         game = this.getGame(idLobby);
 
                         if(guessed){
+                            System.out.println("INDOVINATO!");
                             printHangman(game.getAttempts());
                         }else{
-                            System.out.println("Tentativi rimasti: "+game.getAttempts());
+                            System.out.println("ERRORE!");
                             printHangman(game.getAttempts());
                         }
                         System.out.println(game.getEncodedWordToGuess());
@@ -383,6 +397,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     private void printHangman(int attempts){
+        System.out.println("Tentativi rimasti: "+attempts);
         switch (attempts){
             case 4:
                 System.out.println(HangmanGraphics.FOUR_ATTEMPTS);
