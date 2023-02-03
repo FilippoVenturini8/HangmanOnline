@@ -12,7 +12,7 @@ public interface GameController extends Controller {
 
     void putWordToGuess(Context context) throws HttpResponseException;
 
-    void getEncodedWordToGuess(Context context) throws HttpResponseException;
+    void getGame(Context context) throws HttpResponseException;
 
     static GameController of(String root) {
         return new GameControllerImpl(root);

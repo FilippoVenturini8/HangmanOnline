@@ -6,23 +6,29 @@ public class Game {
 
     private int round = 1;
 
+    private int attempts = 5;
+
     private String wordToGuess;
 
     private String encodedWordToGuess = "";
 
     public Game (){}
 
+    public Game (int round, int attempts, String wordToGuess, String encodedWordToGuess){this.round = round; this.attempts = attempts; this.wordToGuess = wordToGuess; this.encodedWordToGuess = encodedWordToGuess;}
+
     public int getRound(){
         return this.round;
     }
 
-    public String getWordToGuess(String wordToGuess){ return this.wordToGuess;}
+    public String getWordToGuess(){ return this.wordToGuess;}
 
     public void setWordToGuess(String wordToGuess){this.wordToGuess = wordToGuess;}
 
     public String getEncodedWordToGuess() {
         return encodedWordToGuess;
     }
+
+    public int getAttempts(){return this.attempts;}
 
     public void encodeWordToGuess(){
         for(int i = 0; i < this.wordToGuess.length(); i++){

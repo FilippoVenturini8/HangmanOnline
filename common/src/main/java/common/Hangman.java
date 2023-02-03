@@ -17,7 +17,7 @@ public interface Hangman {
 
     String setWordToGuess(int idLobby, String toGuess) throws MissingException;
 
-    String getEncodedWordToGuess(int idLobby) throws MissingException;
+    Game getGame(int idLobby) throws MissingException;
 
     void joinLobby(int idLobby, String nicknameUser) throws MissingException, ConflictException;
 }

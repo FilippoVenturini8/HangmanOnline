@@ -90,10 +90,9 @@ public class LocalHangman implements Hangman{
     }
 
     @Override
-    public String getEncodedWordToGuess(int idLobby) throws MissingException {
+    public Game getGame(int idLobby) throws MissingException {
         Lobby lobby = this.getLobby(idLobby);
-        Game game = lobby.getGame();
-        return game.getEncodedWordToGuess();
+        return lobby.getGame();
     }
 
     @Override

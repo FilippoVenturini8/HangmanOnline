@@ -43,11 +43,11 @@ public class GameControllerImpl extends AbstractController implements GameContro
     }
 
     @Override
-    public void getEncodedWordToGuess(Context context) throws HttpResponseException {
+    public void getGame(Context context) throws HttpResponseException {
         GameApi api = getApi(context);
 
-        var idLobby = context.pathParam("{lobbyId}");
-        var futureResult = api.getEncodedWordToGuess(Integer.parseInt(idLobby));
+        var idLobby=context.pathParam("{lobbyId}");
+        var futureResult = api.getGame(Integer.parseInt(idLobby));
         asyncReplyWithBody(context, "application/json", futureResult);
     }
 
@@ -56,6 +56,6 @@ public class GameControllerImpl extends AbstractController implements GameContro
         app.before(path("*"), Filters.ensureClientAcceptsMimeType("application", "json"));
         app.post(path("/{lobbyId}"), this::postGame);
         app.put(path("/{lobbyId}"),this::putWordToGuess);
-        app.get(path("/{lobbyId}"),this::getEncodedWordToGuess);
+        app.get(path("/{lobbyId}"),this::getGame);
     }
 }

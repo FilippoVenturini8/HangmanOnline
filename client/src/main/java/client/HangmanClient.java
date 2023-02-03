@@ -170,10 +170,21 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 .thenComposeAsync(deserializeOne(String.class));
     }
 
+    private CompletableFuture<Game> getGameAsync(int idLobby){
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/games/"+idLobby))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(Game.class));
+    }
+
     @Override
-    public String getEncodedWordToGuess(int idLobby) throws MissingException {
+    public Game getGame(int idLobby) throws MissingException {
         try {
-            return getEncodedWordToGuessAsync(idLobby).join();
+            return getGameAsync(idLobby).join();
         }catch (CompletionException e){
             // TODO ECCEZIONE?
             return null;
@@ -307,7 +318,8 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     break;
                 case GUESSER:
                     while (encodedToGuess == null || encodedToGuess.equals("")){
-                        encodedToGuess = this.getEncodedWordToGuess(idLobby);
+                        Game game = this.getGame(idLobby);
+                        encodedToGuess = game.getEncodedWordToGuess();
                         Thread.sleep(500);
                     }
                     System.out.println("DA INDOVINARE: \n");
