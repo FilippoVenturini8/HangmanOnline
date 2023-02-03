@@ -1,5 +1,6 @@
 package client;
 
+import client.cli.HangmanGraphics;
 import common.*;
 
 import java.net.URI;
@@ -247,6 +248,8 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
         User actualUser = null;
 
+       System.out.println(HangmanGraphics.FIVE_ERROR);
+
         while (!nickNameOk){
             System.out.print("Inserire un nickname: ");
             actualUser = new User(scanner.nextLine());
@@ -259,12 +262,14 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             }
         }
 
-        System.out.println("\n######### MENU ##################");
+        System.out.println("\n######### MENU ####################");
         System.out.println("[1] Crea una lobby");
         System.out.println("[2] Visualizza la lista delle lobby");
-        System.out.println("###################################");
+        System.out.println("###################################\n");
 
+        System.out.print("Seleziona un'operazione: ");
         String option = scanner.nextLine();
+
         int lobbyId = -1;
 
         switch (option){
@@ -274,7 +279,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 } catch (MissingException e) {
                     throw new RuntimeException(e);
                 }
-                System.out.println("Lobby creata correttamente, codice lobby: "+lobbyId);
+                System.out.println("###################################");
+                System.out.println("Lobby: "+lobbyId);
+                System.out.println("In attesa di un altro giocatore...");
+                System.out.println("###################################");
                 try {
                     while (true){
                         Lobby myLobby = client.getLobby(lobbyId);
@@ -296,9 +304,11 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
                 while (!lobbyOk){
                     List<Lobby> allLobbies = client.getAllLobbies();
+                    System.out.println("##############LOBBIES##############");
                     for(Lobby lobby : allLobbies){
-                        System.out.println("Lobby: " + lobby.getId() + "(" + lobby.getConnectedUserNumber() + "/2)");
+                        System.out.println("Lobby " + lobby.getId() + " : (" + lobby.getConnectedUserNumber() + "/2)");
                     }
+                    System.out.println("###################################\n");
 
                     System.out.print("Inserisci il codice della lobby a cui vuoi connetterti: ");
                     lobbyId = Integer.parseInt(scanner.nextLine());
