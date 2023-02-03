@@ -40,4 +40,17 @@ public class GameApiImpl extends AbstractApi implements GameApi {
                 }
         );
     }
+
+    @Override
+    public CompletableFuture<String> getEncodedWordToGuess(int idLobby) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    try {
+                        return storage().getEncodedWordToGuess(idLobby);
+                    } catch (MissingException e) {
+                        throw new NotFoundResponse();
+                    }
+                }
+        );
+    }
 }

@@ -13,6 +13,8 @@ public interface GameApi {
 
     CompletableFuture<String> setWordToGuess(int idLobby, String toGuess);
 
+    CompletableFuture<String> getEncodedWordToGuess(int idLobby);
+
     static GameApi of(Hangman storage){
         return new GameApiImpl(storage);
     }

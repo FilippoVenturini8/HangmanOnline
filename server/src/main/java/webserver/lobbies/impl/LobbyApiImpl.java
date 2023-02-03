@@ -53,11 +53,11 @@ public class LobbyApiImpl extends AbstractApi implements LobbyApi {
     }
 
     @Override
-    public CompletableFuture<Void> addUserToLobby(int lobbyId, User user) {
+    public CompletableFuture<Void> addUserToLobby(int lobbyId, String nicknameUser) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        storage().joinLobby(lobbyId, user);
+                        storage().joinLobby(lobbyId, nicknameUser);
                         return null;
                     }catch (MissingException e){
                         throw new NotFoundResponse();

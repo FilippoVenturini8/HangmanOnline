@@ -90,12 +90,20 @@ public class LocalHangman implements Hangman{
     }
 
     @Override
-    public void joinLobby(int idLobby, User user) throws MissingException, ConflictException{
+    public String getEncodedWordToGuess(int idLobby) throws MissingException {
+        Lobby lobby = this.getLobby(idLobby);
+        Game game = lobby.getGame();
+        return game.getEncodedWordToGuess();
+    }
+
+    @Override
+    public void joinLobby(int idLobby, String nicknameUser) throws MissingException, ConflictException{
         Lobby lobby = this.getLobby(idLobby); //Se non è presente la lobby viene generata una MissingException qui
 
         if(lobby.isFull()){
             throw new ConflictException("Lobby " + idLobby + " piena.");
         }
+        User user = this.findUser(nicknameUser);
         lobby.addUser(user);
     }
 }

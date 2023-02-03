@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     private static final int port = 10000;
@@ -158,11 +159,11 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
-    private CompletableFuture<?> joinLobbyAsync(int idLobby, User user) {
+    private CompletableFuture<String> getEncodedWordToGuessAsync(int idLobby){
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUri("/lobbies/"+idLobby))
+                .uri(resourceUri("/games/"+idLobby))
                 .header("Accept", "application/json")
-                .PUT(body(user))
+                .GET()
                 .build();
         return sendRequestToClient(request)
                 .thenComposeAsync(checkResponse())
@@ -170,9 +171,30 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     @Override
-    public void joinLobby(int idLobby, User user) throws MissingException, ConflictException {
+    public String getEncodedWordToGuess(int idLobby) throws MissingException {
         try {
-            joinLobbyAsync(idLobby, user).join();
+            return getEncodedWordToGuessAsync(idLobby).join();
+        }catch (CompletionException e){
+            // TODO ECCEZIONE?
+            return null;
+        }
+    }
+
+    private CompletableFuture<?> joinLobbyAsync(int idLobby, String nicknameUser) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/lobbies/"+idLobby))
+                .header("Accept", "application/json")
+                .PUT(body(nicknameUser))
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse())
+                .thenComposeAsync(deserializeOne(String.class));
+    }
+
+    @Override
+    public void joinLobby(int idLobby, String nicknameUser) throws MissingException, ConflictException {
+        try {
+            joinLobbyAsync(idLobby, nicknameUser).join();
         } catch (CompletionException e) {
             if(e.getCause() instanceof MissingException){
                 throw getCauseAs(e, MissingException.class);
@@ -209,7 +231,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         System.out.println("###################################");
 
         String option = scanner.nextLine();
-        int lobbyId;
+        int lobbyId = -1;
 
         switch (option){
             case "1":
@@ -237,7 +259,6 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             case "2":
 
                 boolean lobbyOk = false;
-                String lobbyIdToConnect = null;
 
                 while (!lobbyOk){
                     List<Lobby> allLobbies = client.getAllLobbies();
@@ -246,10 +267,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     }
 
                     System.out.print("Inserisci il codice della lobby a cui vuoi connetterti: ");
-                    lobbyIdToConnect = scanner.nextLine();
+                    lobbyId = Integer.parseInt(scanner.nextLine());
 
                     try {
-                        client.joinLobby(Integer.valueOf(lobbyIdToConnect), actualUser);
+                        client.joinLobby(lobbyId, actualUser.getNickName());
                         lobbyOk = true;
                     }catch (MissingException e){
                         System.out.println("La lobby selezionata non è presente.");
@@ -261,10 +282,11 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 }
 
                 try {
-                    client.startGame(Integer.valueOf(lobbyIdToConnect), new Game());
+                    client.startGame(Integer.valueOf(lobbyId), new Game());
                 } catch (MissingException e) {
                     throw new RuntimeException(e);
                 }
+                client.inGame(actualUser, lobbyId);
 
                 break;
         }
@@ -274,19 +296,28 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         Scanner scanner = new Scanner(System.in);
         try {
             GameRole myRole = this.findUser(actualUser.getNickName()).getGameRole();
+            System.out.println(myRole);
+            String encodedToGuess = null;
             switch (myRole){
                 case CHOOSER:
                     System.out.print("Parola da far indovinare: ");
                     String toGuess = scanner.nextLine();
-                    String encodedToGuess = this.setWordToGuess(idLobby, toGuess);
+                    encodedToGuess = this.setWordToGuess(idLobby, toGuess);
                     System.out.println(encodedToGuess);
                     break;
                 case GUESSER:
-
+                    while (encodedToGuess == null || encodedToGuess.equals("")){
+                        encodedToGuess = this.getEncodedWordToGuess(idLobby);
+                        Thread.sleep(500);
+                    }
+                    System.out.println("DA INDOVINARE: \n");
+                    System.out.println(encodedToGuess);
                     break;
             }
 
         } catch (MissingException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

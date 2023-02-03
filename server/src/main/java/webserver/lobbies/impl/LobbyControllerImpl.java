@@ -52,7 +52,7 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
         LobbyApi api = getApi(context);
 
         var lobbyId = context.pathParam("{lobbyId}");
-        var user = context.bodyAsClass(User.class);
+        var user = context.bodyAsClass(String.class);
         var futureResult = api.addUserToLobby(Integer.valueOf(lobbyId), user);
         asyncReplyWithoutBody(context, "application/json", futureResult);
     }
