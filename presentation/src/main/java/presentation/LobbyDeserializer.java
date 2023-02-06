@@ -40,7 +40,7 @@ public class LobbyDeserializer implements JsonDeserializer<Lobby> {
         List<User> users = new ArrayList<>(usersArray.size());
         for (JsonElement item : usersArray) {
             if (item.isJsonNull()) continue;
-            users.add(getPropertyAs((JsonObject) item,"", User.class, context)); //TODO NOME PROPRIETà ?
+            users.add(context.deserialize(item, User.class)); //TODO NOME PROPRIETà ?
         }
 
         Lobby lobby = new Lobby(id);

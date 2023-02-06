@@ -1,12 +1,21 @@
 package common;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Game {
 
     private int round = 1;
 
+    private boolean guesserRoundWon = false;
+
     private int attempts = 5;
+
+    private List<User> players;
+
+    private List<Integer> results;
 
     private String wordToGuess;
 
@@ -14,11 +23,45 @@ public class Game {
 
     public Game (){}
 
-    public Game (int round, int attempts, String wordToGuess, String encodedWordToGuess){this.round = round; this.attempts = attempts; this.wordToGuess = wordToGuess; this.encodedWordToGuess = encodedWordToGuess;}
+    public Game(int round, int attempts, String toGuess, String encodedToGuess, List<User> players, List<Integer> results) {
+        this.round = round;
+        this.attempts = attempts;
+        this.wordToGuess = toGuess;
+        this.encodedWordToGuess = encodedToGuess;
+        this.players = players;
+        this.results = results;
+    }
+
+    public void setPlayers(List<User> players){
+        this.players = players;
+        this.results = new ArrayList<>(List.of(0,0)); //Set initial state of the results
+    }
+
+    public int getRoundWon(User player){
+        return this.players.get(0).equals(player) ? this.results.get(0) : this.results.get(1);
+    }
+
+    public List<Integer> getResults(){
+        return this.results;
+    }
+
+    public void incWon(GameRole role){
+        for(User player : this.players){
+            if(player.getGameRole().equals(role)){ //Search the right role
+                if(player.equals(this.players.get(0))){
+                    this.results.set(0, this.results.get(0)+1); //Increment round won by the first player
+                }else {
+                    this.results.set(1, this.results.get(1)+1); //Increment round won by the second player
+                }
+            }
+        }
+    }
 
     public int getRound(){
         return this.round;
     }
+
+    public List<User> getPlayers(){return this.players;}
 
     public String getWordToGuess(){ return this.wordToGuess;}
 
@@ -29,6 +72,8 @@ public class Game {
     }
 
     public int getAttempts(){return this.attempts;}
+
+    public boolean getGuesserRoundWon(){return this.guesserRoundWon;}
 
     public void encodeWordToGuess(){
         for(int i = 0; i < this.wordToGuess.length(); i++){
@@ -54,6 +99,9 @@ public class Game {
                     guessedSomething = true;
                 }
             }
+            if(this.wordToGuess.equals(this.encodedWordToGuess)){
+                this.guesserRoundWon = true;
+            }
             if(!guessedSomething){
                 this.attempts--;
             }
@@ -64,20 +112,21 @@ public class Game {
             }else {
                 guessedSomething = true;
                 this.encodedWordToGuess = this.wordToGuess;
+                this.guesserRoundWon = true;
             }
         }
         return guessedSomething;
     }
 
-    public void setRndGameRoles(List<User>users){
+    public void setRndGameRoles(){
         long rnd = Math.round(Math.random());
 
         if(rnd == 0){
-            users.get(0).setAsChooser();
-            users.get(1).setAsGuesser();
+            this.players.get(0).setAsChooser();
+            this.players.get(1).setAsGuesser();
         }else{
-            users.get(0).setAsGuesser();
-            users.get(1).setAsChooser();
+            this.players.get(0).setAsGuesser();
+            this.players.get(1).setAsChooser();
         }
     }
 }

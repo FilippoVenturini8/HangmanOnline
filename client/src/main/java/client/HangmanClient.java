@@ -353,6 +353,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         Game game = this.getGame(idLobby);
                         if(!game.getEncodedWordToGuess().equals(encodedToGuess) || actualAttempts != game.getAttempts()){
                             printHangman(game.getAttempts());
+                            System.out.println("Round vinti: (" + game.getRoundWon(actualUser) + "/3");
                             System.out.println(game.getEncodedWordToGuess());
                             encodedToGuess = game.getEncodedWordToGuess();
                             actualAttempts = game.getAttempts();
@@ -383,6 +384,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                             System.out.println("ERRORE!");
                             printHangman(game.getAttempts());
                         }
+                        System.out.println("Round vinti: " + game.getRoundWon(actualUser) + "/3");
                         System.out.println(game.getEncodedWordToGuess());
                     }
 

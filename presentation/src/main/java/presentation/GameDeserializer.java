@@ -3,8 +3,11 @@ package presentation;
 import com.google.gson.*;
 import common.Game;
 import common.GameRole;
+import common.User;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameDeserializer implements JsonDeserializer<Game> {
 
@@ -35,6 +38,22 @@ public class GameDeserializer implements JsonDeserializer<Game> {
         var toGuess = getPropertyAsString(object, "toGuess");
         var encodedToGuess = getPropertyAsString(object, "encodedToGuess");
 
-        return new Game(round, attempts, toGuess, encodedToGuess);
+        var playersArray = object.getAsJsonArray("players");
+
+        List<User> players = new ArrayList<>(playersArray.size());
+        for (JsonElement item : playersArray) {
+            if (item.isJsonNull()) continue;
+            players.add(context.deserialize(item, User.class)); //TODO NOME PROPRIETà ?
+        }
+
+        var resultsArray = object.getAsJsonArray("results");
+
+        List<Integer> results = new ArrayList<>(resultsArray.size());
+        for (JsonElement item : resultsArray) {
+            if (item.isJsonNull()) continue;
+            results.add(item.getAsInt()); //TODO NOME PROPRIETà ?
+        }
+
+        return new Game(round, attempts, toGuess, encodedToGuess, players, results);
     }
 }
