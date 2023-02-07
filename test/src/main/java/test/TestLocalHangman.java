@@ -42,4 +42,28 @@ public class TestLocalHangman extends AbstractTestHangman {
     public void testLobbyCreationError() {
         super.testLobbyCreationError();
     }
+
+    @Override
+    @Test
+    public void testLobbyConnection() throws MissingException, ConflictException {
+        super.testLobbyConnection();
+    }
+
+    @Override
+    @Test
+    public void testStartGame() throws MissingException, ConflictException {
+        super.testStartGame();
+    }
+
+    @Override
+    @Test
+    public void testChooseAndEncodeWord() throws MissingException, ConflictException {
+        super.testChooseAndEncodeWord();
+    }
+
+    @Override
+    @Test
+    public void testFailedAttempt() throws MissingException, ConflictException {
+        super.testFailedAttempt();
+    }
 }
