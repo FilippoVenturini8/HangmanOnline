@@ -238,13 +238,12 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
-
-
     public static void main(String[] args) {
         HangmanClient client = new HangmanClient("localhost",port);
         Scanner scanner = new Scanner(System.in);
 
         boolean nickNameOk = false;
+        boolean wrongOption = false;
 
         User actualUser = null;
 
@@ -315,10 +314,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                             client.joinLobby(lobbyId, actualUser.getNickName());
                             lobbyOk = true;
                         }catch (MissingException e){
-                            System.out.println("La lobby selezionata non è presente.\n");
+                            System.out.println("\nLa lobby selezionata non è presente.");
                             lobbyOk = false;
                         }catch (ConflictException e){
-                            System.out.println("La lobby selezionata è piena.\n");
+                            System.out.println("\nLa lobby selezionata è piena.");
                             lobbyOk = false;
                         }
                     }
@@ -330,6 +329,13 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     }
 
                     break;
+                default:
+                    wrongOption = true;
+                    break;
+            }
+
+            if(wrongOption){
+               continue;
             }
 
             boolean isGameFinished = false;
