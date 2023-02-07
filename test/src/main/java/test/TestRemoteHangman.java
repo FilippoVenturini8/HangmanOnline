@@ -1,22 +1,29 @@
 package test;
 
+import client.HangmanClient;
 import common.ConflictException;
 import common.Hangman;
-import common.LocalHangman;
 import common.MissingException;
 import org.junit.jupiter.api.Test;
+import webserver.HangmanService;
 
 import java.io.IOException;
 
-public class TestLocalHangman extends AbstractTestHangman {
+public class TestRemoteHangman extends AbstractTestHangman{
+
+    private static final int port = 10000;
+
+    private HangmanService service;
+
     @Override
     protected void beforeCreatingHangman() throws IOException {
-
+        service = new HangmanService(port);
+        service.start();
     }
 
     @Override
     protected Hangman createHangman() throws ConflictException {
-        return new LocalHangman();
+        return new HangmanClient("localhost", port);
     }
 
     @Override
@@ -26,7 +33,7 @@ public class TestLocalHangman extends AbstractTestHangman {
 
     @Override
     protected void afterShuttingAuthenticatorDown() throws InterruptedException {
-
+        service.stop();
     }
 
     @Override

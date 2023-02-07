@@ -1,6 +1,7 @@
 package test;
 
 import common.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
@@ -36,6 +37,16 @@ public abstract class AbstractTestHangman {
     protected abstract void beforeCreatingHangman() throws IOException;
 
     protected abstract Hangman createHangman() throws ConflictException;
+
+    @AfterEach
+    public final void teardown() throws InterruptedException {
+        shutdownHangman(hangman);
+        afterShuttingAuthenticatorDown();
+    }
+
+    protected abstract void shutdownHangman(Hangman hangman);
+
+    protected abstract void afterShuttingAuthenticatorDown() throws InterruptedException;
 
     public void testUserConnections() throws ConflictException, MissingException {
         hangman.connectUser(nicolo);
@@ -117,7 +128,6 @@ public abstract class AbstractTestHangman {
         String testWord = "daindovinare";
         String testEncodedWord = "-++--+-+-+-+";
 
-
         hangman.setWordToGuess(idLobbyFilippo, testWord);
 
         for(int i = 5; i>2; i--){
@@ -127,9 +137,35 @@ public abstract class AbstractTestHangman {
             assertEquals(hangman.getGame(idLobbyFilippo).getAttempts(), i-1);
         }
 
-        hangman.tryToGuess(idLobbyFilippo, "parolasbagliata");
+        hangman.tryToGuess(idLobbyFilippo, "parolasbagliata1");
         assertEquals(hangman.getGame(idLobbyFilippo).getEncodedWordToGuess(), testEncodedWord);
         assertEquals(hangman.getGame(idLobbyFilippo).getAttempts(), 1);
+
+        hangman.tryToGuess(idLobbyFilippo, "parolasbagliata2");
+        assertEquals(false, hangman.getGame(idLobbyFilippo).getGuesserRoundWon());
+    }
+
+    public void testCorrectAttempt() throws MissingException, ConflictException {
+        int idLobbyFilippo = hangman.createLobby(filippo.getNickName());
+        hangman.joinLobby(idLobbyFilippo, alberto.getNickName());
+        hangman.startGame(idLobbyFilippo, new Game());
+
+        String testWord = "daindovinare";
+
+        hangman.setWordToGuess(idLobbyFilippo, testWord);
+
+        hangman.tryToGuess(idLobbyFilippo, "a");
+        assertEquals("-a+--+-+-a-+", hangman.getGame(idLobbyFilippo).getEncodedWordToGuess());
+        assertEquals(5, hangman.getGame(idLobbyFilippo).getAttempts());
+        hangman.tryToGuess(idLobbyFilippo, "i");
+        assertEquals("-ai--+-i-a-+", hangman.getGame(idLobbyFilippo).getEncodedWordToGuess());
+        assertEquals(5, hangman.getGame(idLobbyFilippo).getAttempts());
+        hangman.tryToGuess(idLobbyFilippo, "n");
+        assertEquals("-ain-+-ina-+", hangman.getGame(idLobbyFilippo).getEncodedWordToGuess());
+        assertEquals(5, hangman.getGame(idLobbyFilippo).getAttempts());
+
+        hangman.tryToGuess(idLobbyFilippo, "daindovinare");
+        assertEquals(5, hangman.getGame(idLobbyFilippo).getAttempts());
     }
 
 }
