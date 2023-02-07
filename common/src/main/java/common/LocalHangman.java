@@ -21,7 +21,6 @@ public class LocalHangman implements Hangman{
             throw new ConflictException("Nickname " + copy.getNickName() + " già in uso!");
         }
         users.add(copy);
-        System.out.println("Utente aggiunto: "+copy.getNickName());
     }
 
     @Override
@@ -47,7 +46,6 @@ public class LocalHangman implements Hangman{
         User user = this.findUser(nicknameUser);
         newLobby.addUser(user);
         lobbies.add(newLobby);
-        System.out.println("Lobby creata!");
         return newLobby.getId();
     }
 
