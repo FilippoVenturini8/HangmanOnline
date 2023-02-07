@@ -277,7 +277,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 } catch (MissingException e) {
                     throw new RuntimeException(e);
                 }
-                System.out.println("###################################");
+                System.out.println("\n###################################");
                 System.out.println("Lobby: "+lobbyId);
                 System.out.println("In attesa di un altro giocatore...");
                 System.out.println("###################################");
@@ -301,7 +301,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
                 while (!lobbyOk){
                     List<Lobby> allLobbies = client.getAllLobbies();
-                    System.out.println("##############LOBBIES##############");
+                    System.out.println("\n##############LOBBIES##############");
                     for(Lobby lobby : allLobbies){
                         System.out.println("Lobby " + lobby.getId() + " : (" + lobby.getConnectedUserNumber() + "/2)");
                     }
@@ -314,10 +314,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         client.joinLobby(lobbyId, actualUser.getNickName());
                         lobbyOk = true;
                     }catch (MissingException e){
-                        System.out.println("La lobby selezionata non è presente.");
+                        System.out.println("La lobby selezionata non è presente.\n");
                         lobbyOk = false;
                     }catch (ConflictException e){
-                        System.out.println("La lobby selezionata è piena.");
+                        System.out.println("La lobby selezionata è piena.\n");
                         lobbyOk = false;
                     }
                 }
@@ -333,7 +333,6 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
         while (true){
             client.inGame(actualUser, lobbyId);
-            System.out.println("PROSSIMO ROUND");
         }
     }
 
@@ -345,14 +344,24 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
         try {
             GameRole myRole = this.findUser(actualUser.getNickName()).getGameRole();
-            System.out.println(myRole);
+
+            System.out.println("\n-----------");
+            System.out.println(""+myRole+"");
+            System.out.println("-----------\n");
+
             String encodedToGuess = null;
             switch (myRole){
                 case CHOOSER:
                     System.out.print("Parola da far indovinare: ");
                     String toGuess = scanner.nextLine();
                     encodedToGuess = this.setWordToGuess(idLobby, toGuess);
-                    System.out.println(encodedToGuess);
+
+                    System.out.print('\n');
+
+                    for(String c : encodedToGuess.split("")){
+                        System.out.print(c+" ");
+                    }
+                    System.out.println('\n');
 
                     int actualAttempts = this.getGame(idLobby).getAttempts();
                     game = this.getGame(idLobby);
@@ -364,35 +373,59 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         game = this.getGame(idLobby);
                         actualRound = game.getRound();
 
-                        if(actualRound != initialRound){
+                        if(actualRound != initialRound){ //Next Round
+                            if(!game.getGuesserRoundWon()){
+                                System.out.println("ROUND VINTO!");
+                            }else {
+                                System.out.println("ROUND PERSO!");
+                            }
                             break;
                         }
 
                         if(!game.getEncodedWordToGuess().equals(encodedToGuess) || actualAttempts != game.getAttempts()){
                             printHangman(game.getAttempts());
-                            System.out.println("Round vinti: " + game.getRoundWon(actualUser) + "/3");
-                            System.out.println(game.getEncodedWordToGuess());
+
+                            System.out.println("------------------------");
+                            System.out.println("| Round vinti: " + game.getRoundWon(actualUser) + "/3     |");
+                            System.out.println("------------------------\n");
+
                             encodedToGuess = game.getEncodedWordToGuess();
+
+                            for(String c : encodedToGuess.split("")){
+                                System.out.print(c+" ");
+                            }
+                            System.out.println('\n');
+
                             actualAttempts = game.getAttempts();
                         }
                         Thread.sleep(500);
                     }
                     break;
                 case GUESSER:
+                    System.out.println("In attesa della parola scelta...");
                     while (encodedToGuess == null || encodedToGuess.equals("")){
                         game = this.getGame(idLobby);
                         encodedToGuess = game.getEncodedWordToGuess();
                         Thread.sleep(500);
                     }
                     System.out.println("DA INDOVINARE: \n");
-                    System.out.println(encodedToGuess);
+
+                    for(String c : encodedToGuess.split("")){
+                        System.out.print(c+" ");
+                    }
+                    System.out.println('\n');
 
                     initialRound = game.getRound();
                     actualRound = initialRound;
 
                     while(true){
 
-                        if(actualRound != initialRound){
+                        if(actualRound != initialRound){ //Next Round
+                            if(game.getGuesserRoundWon()){
+                                System.out.println("ROUND VINTO!");
+                            }else {
+                                System.out.println("ROUND PERSO!");
+                            }
                             break;
                         }
 
@@ -403,14 +436,23 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
                         actualRound = game.getRound();
 
+                        System.out.println("------------------------");
+                        System.out.println("| Round vinti: " + game.getRoundWon(actualUser) + "/3     |");
+                        System.out.println("| Tentativi rimasti: "+game.getAttempts()+" |");
+                        System.out.println("------------------------\n");
+
                         if(guessed){
                             System.out.println("INDOVINATO!");
                         }else{
                             System.out.println("ERRORE!");
                         }
-                        System.out.println("Round vinti: " + game.getRoundWon(actualUser) + "/3");
+
                         printHangman(game.getAttempts());
-                        System.out.println(game.getEncodedWordToGuess());
+
+                        for(String c : game.getEncodedWordToGuess().split("")){
+                            System.out.print(c+" ");
+                        }
+                        System.out.println('\n');
                     }
 
                    break;
@@ -424,7 +466,6 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     private void printHangman(int attempts){
-        System.out.println("Tentativi rimasti: "+attempts);
         switch (attempts){
             case 4:
                 System.out.println(HangmanGraphics.FOUR_ATTEMPTS);

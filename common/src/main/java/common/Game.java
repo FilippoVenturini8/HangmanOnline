@@ -23,13 +23,14 @@ public class Game {
 
     public Game (){}
 
-    public Game(int round, int attempts, String toGuess, String encodedToGuess, List<User> players, List<Integer> results) {
+    public Game(int round, int attempts, String toGuess, String encodedToGuess, List<User> players, List<Integer> results, boolean guesserRoundWon) {
         this.round = round;
         this.attempts = attempts;
         this.wordToGuess = toGuess;
         this.encodedWordToGuess = encodedToGuess;
         this.players = players;
         this.results = results;
+        this.guesserRoundWon = guesserRoundWon;
     }
 
     public void setPlayers(List<User> players){
@@ -64,6 +65,7 @@ public class Game {
     public void newRound(){
         this.wordToGuess = "";
         this.encodedWordToGuess = "";
+        this.attempts = 5;
         this.round++;
     }
 

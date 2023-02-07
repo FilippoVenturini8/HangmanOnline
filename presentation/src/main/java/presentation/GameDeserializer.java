@@ -37,6 +37,7 @@ public class GameDeserializer implements JsonDeserializer<Game> {
         int attempts = getPropertyAs(object, "attempts", Integer.class, context);
         var toGuess = getPropertyAsString(object, "toGuess");
         var encodedToGuess = getPropertyAsString(object, "encodedToGuess");
+        var guesserRoundWon = getPropertyAs(object, "guesserRoundWon", Boolean.class, context);
 
         var playersArray = object.getAsJsonArray("players");
 
@@ -54,6 +55,6 @@ public class GameDeserializer implements JsonDeserializer<Game> {
             results.add(item.getAsInt()); //TODO NOME PROPRIETà ?
         }
 
-        return new Game(round, attempts, toGuess, encodedToGuess, players, results);
+        return new Game(round, attempts, toGuess, encodedToGuess, players, results, guesserRoundWon);
     }
 }
