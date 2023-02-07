@@ -3,13 +3,13 @@ package client;
 import client.cli.HangmanGraphics;
 import common.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     private static final int port = 10000;
@@ -260,87 +260,96 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             }
         }
 
-        System.out.println("\n######### MENU ####################");
-        System.out.println("[1] Crea una lobby");
-        System.out.println("[2] Visualizza la lista delle lobby");
-        System.out.println("###################################\n");
+        while (true){
+            System.out.println("\n######### MENU ####################");
+            System.out.println("[1] Crea una lobby");
+            System.out.println("[2] Visualizza la lista delle lobby");
+            System.out.println("###################################\n");
 
-        System.out.print("Seleziona un'operazione: ");
-        String option = scanner.nextLine();
+            System.out.print("Seleziona un'operazione: ");
+            String option = scanner.nextLine();
 
-        int lobbyId = -1;
+            int lobbyId = -1;
 
-        switch (option){
-            case "1":
-                try {
-                    lobbyId = client.createLobby(actualUser.getNickName());
-                } catch (MissingException e) {
-                    throw new RuntimeException(e);
-                }
-                System.out.println("\n###################################");
-                System.out.println("Lobby: "+lobbyId);
-                System.out.println("In attesa di un altro giocatore...");
-                System.out.println("###################################");
-                try {
-                    while (true){
-                        Lobby myLobby = client.getLobby(lobbyId);
-                        if(myLobby.isFull()){ //Another player is connected
-                            break;
+            switch (option){
+                case "1":
+                    try {
+                        lobbyId = client.createLobby(actualUser.getNickName());
+                    } catch (MissingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("\n###################################");
+                    System.out.println("Lobby: "+lobbyId);
+                    System.out.println("In attesa di un altro giocatore...");
+                    System.out.println("###################################");
+                    try {
+                        while (true){
+                            Lobby myLobby = client.getLobby(lobbyId);
+                            if(myLobby.isFull()){ //Another player is connected
+                                break;
+                            }
+                            Thread.sleep(500);
                         }
-                        Thread.sleep(500);
+                    } catch (MissingException e) {
+                        System.out.println("Lobby "+ lobbyId + " inesistente.");
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                } catch (MissingException e) {
-                    System.out.println("Lobby "+ lobbyId + " inesistente.");
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case "2":
+                    break;
+                case "2":
 
-                boolean lobbyOk = false;
+                    boolean lobbyOk = false;
 
-                while (!lobbyOk){
-                    List<Lobby> allLobbies = client.getAllLobbies();
-                    System.out.println("\n##############LOBBIES##############");
-                    for(Lobby lobby : allLobbies){
-                        System.out.println("Lobby " + lobby.getId() + " : (" + lobby.getConnectedUserNumber() + "/2)");
+                    while (!lobbyOk){
+                        List<Lobby> allLobbies = client.getAllLobbies();
+                        System.out.println("\n##############LOBBIES##############");
+                        for(Lobby lobby : allLobbies){
+                            System.out.println("Lobby " + lobby.getId() + " : (" + lobby.getConnectedUserNumber() + "/2)");
+                        }
+                        System.out.println("###################################\n");
+
+                        System.out.print("Inserisci il codice della lobby a cui vuoi connetterti: ");
+                        lobbyId = Integer.parseInt(scanner.nextLine());
+
+                        try {
+                            client.joinLobby(lobbyId, actualUser.getNickName());
+                            lobbyOk = true;
+                        }catch (MissingException e){
+                            System.out.println("La lobby selezionata non è presente.\n");
+                            lobbyOk = false;
+                        }catch (ConflictException e){
+                            System.out.println("La lobby selezionata è piena.\n");
+                            lobbyOk = false;
+                        }
                     }
-                    System.out.println("###################################\n");
-
-                    System.out.print("Inserisci il codice della lobby a cui vuoi connetterti: ");
-                    lobbyId = Integer.parseInt(scanner.nextLine());
 
                     try {
-                        client.joinLobby(lobbyId, actualUser.getNickName());
-                        lobbyOk = true;
-                    }catch (MissingException e){
-                        System.out.println("La lobby selezionata non è presente.\n");
-                        lobbyOk = false;
-                    }catch (ConflictException e){
-                        System.out.println("La lobby selezionata è piena.\n");
-                        lobbyOk = false;
+                        client.startGame(Integer.valueOf(lobbyId), new Game());
+                    } catch (MissingException e) {
+                        throw new RuntimeException(e);
                     }
-                }
 
-                try {
-                    client.startGame(Integer.valueOf(lobbyId), new Game());
-                } catch (MissingException e) {
-                    throw new RuntimeException(e);
-                }
+                    break;
+            }
 
-                break;
+            boolean isGameFinished = false;
+            while (!isGameFinished){
+                isGameFinished = client.oneRound(actualUser, lobbyId);
+            }
+
+            System.out.println("\nPartita terminata.");
         }
 
-        while (true){
-            client.inGame(actualUser, lobbyId);
-        }
+
     }
 
-    private void inGame(User actualUser, int idLobby) {
+    private boolean oneRound(User actualUser, int idLobby) {
         Scanner scanner = new Scanner(System.in);
         Game game = null;
         int initialRound;
         int actualRound;
+        int previousRoundWon;
+        boolean gameFinished = false;
 
         try {
             GameRole myRole = this.findUser(actualUser.getNickName()).getGameRole();
@@ -367,18 +376,19 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     game = this.getGame(idLobby);
 
                     initialRound = game.getRound();
-                    actualRound = initialRound;
+                    previousRoundWon = game.getRoundWon(actualUser);
 
                     while (true){
                         game = this.getGame(idLobby);
                         actualRound = game.getRound();
 
-                        if(actualRound != initialRound){ //Next Round
-                            if(!game.getGuesserRoundWon()){
+                        if(actualRound != initialRound || game.isGameFinished()){ //Next Round
+                            if(game.getRoundWon(actualUser) > previousRoundWon){
                                 System.out.println("ROUND VINTO!");
                             }else {
                                 System.out.println("ROUND PERSO!");
                             }
+                            gameFinished = game.isGameFinished();
                             break;
                         }
 
@@ -386,7 +396,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                             printHangman(game.getAttempts());
 
                             System.out.println("------------------------");
-                            System.out.println("| Round vinti: " + game.getRoundWon(actualUser) + "/3     |");
+                            System.out.println("| Round vinti: " + game.getRoundWon(actualUser) + "/2     |");
                             System.out.println("------------------------\n");
 
                             encodedToGuess = game.getEncodedWordToGuess();
@@ -417,15 +427,17 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
                     initialRound = game.getRound();
                     actualRound = initialRound;
+                    previousRoundWon = game.getRoundWon(actualUser);
 
                     while(true){
 
-                        if(actualRound != initialRound){ //Next Round
-                            if(game.getGuesserRoundWon()){
+                        if(actualRound != initialRound || game.isGameFinished()){ //Next Round
+                            if(game.getRoundWon(actualUser) > previousRoundWon){
                                 System.out.println("ROUND VINTO!");
                             }else {
                                 System.out.println("ROUND PERSO!");
                             }
+                            gameFinished = game.isGameFinished();
                             break;
                         }
 
@@ -437,7 +449,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         actualRound = game.getRound();
 
                         System.out.println("------------------------");
-                        System.out.println("| Round vinti: " + game.getRoundWon(actualUser) + "/3     |");
+                        System.out.println("| Round vinti: " + game.getRoundWon(actualUser) + "/2     |");
                         System.out.println("| Tentativi rimasti: "+game.getAttempts()+" |");
                         System.out.println("------------------------\n");
 
@@ -463,6 +475,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        return gameFinished;
     }
 
     private void printHangman(int attempts){

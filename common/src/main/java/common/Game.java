@@ -63,7 +63,8 @@ public class Game {
     }
 
     public void newRound(){
-        this.wordToGuess = "";
+        this.wordToGuess = null;
+        this.guesserRoundWon = false;
         this.encodedWordToGuess = "";
         this.attempts = 5;
         this.round++;
@@ -85,6 +86,10 @@ public class Game {
 
     public boolean isNeededExtraRound(){
         return this.results.get(0) == 1 && this.results.get(1) == 1;
+    }
+
+    public boolean isGameFinished(){
+        return this.results.get(0) == 2 || this.results.get(1) == 2;
     }
 
     public void encodeWordToGuess(){
