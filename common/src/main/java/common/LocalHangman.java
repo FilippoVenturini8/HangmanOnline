@@ -113,9 +113,23 @@ public class LocalHangman implements Hangman{
         boolean guessed = game.tryToGuess(attempt);
         if(game.getAttempts() == 0 && !game.getGuesserRoundWon()){
             game.incWon(GameRole.CHOOSER);
+            if(game.getRound() == 1){ //Done only one round, the second is mandatory
+                game.newRound();
+                game.switchGameRoles();
+            } else if (game.getRound() == 2 && game.isNeededExtraRound()) { //For the third round rnd game roles
+                game.newRound();
+                game.setRndGameRoles();
+            }
         }
         else if(game.getGuesserRoundWon()){
             game.incWon(GameRole.GUESSER);
+            if(game.getRound() == 1){ //Done only one round, the second is mandatory
+                game.newRound();
+                game.switchGameRoles();
+            } else if (game.getRound() == 2 && game.isNeededExtraRound()) { //For the third round rnd game roles
+                game.newRound();
+                game.setRndGameRoles();
+            }
         }
         return guessed;
     }

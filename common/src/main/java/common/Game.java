@@ -61,6 +61,12 @@ public class Game {
         return this.round;
     }
 
+    public void newRound(){
+        this.wordToGuess = "";
+        this.encodedWordToGuess = "";
+        this.round++;
+    }
+
     public List<User> getPlayers(){return this.players;}
 
     public String getWordToGuess(){ return this.wordToGuess;}
@@ -74,6 +80,10 @@ public class Game {
     public int getAttempts(){return this.attempts;}
 
     public boolean getGuesserRoundWon(){return this.guesserRoundWon;}
+
+    public boolean isNeededExtraRound(){
+        return this.results.get(0) == 1 && this.results.get(1) == 1;
+    }
 
     public void encodeWordToGuess(){
         for(int i = 0; i < this.wordToGuess.length(); i++){
@@ -127,6 +137,16 @@ public class Game {
         }else{
             this.players.get(0).setAsGuesser();
             this.players.get(1).setAsChooser();
+        }
+    }
+
+    public void switchGameRoles(){
+        if(this.players.get(0).getGameRole().equals(GameRole.CHOOSER)){
+            this.players.get(0).setAsGuesser();
+            this.players.get(1).setAsChooser();
+        }else{
+            this.players.get(0).setAsChooser();
+            this.players.get(1).setAsGuesser();
         }
     }
 }
