@@ -11,6 +11,8 @@ public interface LobbyController extends Controller {
 
     void postLobby(Context context) throws HttpResponseException;
 
+    void deleteLobby(Context context) throws HttpResponseException;
+
     void getAllLobbies(Context context) throws HttpResponseException;
 
     void getLobby(Context context) throws HttpResponseException;

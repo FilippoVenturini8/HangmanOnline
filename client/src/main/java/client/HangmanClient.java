@@ -99,6 +99,24 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
+    private CompletableFuture<?> deleteLobbyAsync(int idLobby){
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/lobbies/"+idLobby))
+                .DELETE()
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse());
+    }
+
+    @Override
+    public void deleteLobby(int idLobby) throws MissingException {
+        try {
+            deleteLobbyAsync(idLobby).join();
+        }catch (CompletionException e){
+            throw getCauseAs(e, MissingException.class);
+        }
+    }
+
     private CompletableFuture<?> joinLobbyAsync(int idLobby, String nicknameUser) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/lobbies/"+idLobby))
@@ -276,7 +294,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
 
         while (true){
-            System.out.println("\n######### MENU ####################");
+            System.out.println("\n############## MENU ###############");
             System.out.println("[1] Crea una lobby");
             System.out.println("[2] Visualizza la lista delle lobby");
             System.out.println("[3] Esci");
@@ -322,10 +340,15 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         for(Lobby lobby : allLobbies){
                             System.out.println("Lobby " + lobby.getId() + " : (" + lobby.getConnectedUserNumber() + "/2)");
                         }
+                        System.out.println("\n[0] Torna al menu");
                         System.out.println("###################################\n");
 
-                        System.out.print("Inserisci il codice della lobby a cui vuoi connetterti: ");
+                        System.out.print("Codice lobby a cui connettersi: ");
                         lobbyId = Integer.parseInt(scanner.nextLine());
+
+                        if(lobbyId == 0){ //Back to the menu
+                            break;
+                        }
 
                         try {
                             client.joinLobby(lobbyId, actualUser.getNickName());
@@ -337,6 +360,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                             System.out.println("\nLa lobby selezionata è piena.");
                             lobbyOk = false;
                         }
+                    }
+
+                    if(lobbyId == 0){ //Back to the menu
+                        break;
                     }
 
                     try {
@@ -355,6 +382,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     }
                     exit = true;
                     break;
+
                 default:
                     wrongOption = true;
                     break;
@@ -364,13 +392,21 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 break;
             }
 
-            if(wrongOption){
+            if(wrongOption || lobbyId == 0){ //Back to the menu
                continue;
             }
 
             boolean isGameFinished = false;
             while (!isGameFinished){
                 isGameFinished = client.oneRound(actualUser, lobbyId);
+            }
+
+            if(option.equals("1")){ //The creator of the lobby delete it at the end of the game
+                try {
+                    client.deleteLobby(lobbyId);
+                } catch (MissingException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             System.out.println("\nPartita terminata.");
