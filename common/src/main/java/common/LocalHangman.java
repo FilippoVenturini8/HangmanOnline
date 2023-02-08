@@ -24,6 +24,12 @@ public class LocalHangman implements Hangman{
     }
 
     @Override
+    public void disconnectUser(String nicknameUser) throws MissingException {
+        User toRemove = this.findUser(nicknameUser);
+        this.users.remove(toRemove);
+    }
+
+    @Override
     public User findUser(String nicknameUser) throws MissingException {
         boolean foundUser = false;
         int userIndex = -1;

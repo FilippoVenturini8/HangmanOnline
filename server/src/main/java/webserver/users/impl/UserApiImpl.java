@@ -36,6 +36,20 @@ public class UserApiImpl extends AbstractApi implements UserApi {
     }
 
     @Override
+    public CompletableFuture<Void> disconnectUser(String nicknameUser) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    try {
+                        storage().disconnectUser(nicknameUser);
+                        return null;
+                    } catch (MissingException e) {
+                        throw new NotFoundResponse();
+                    }
+                }
+        );
+    }
+
+    @Override
     public CompletableFuture<User> findUser(String nicknameUser) {
         return CompletableFuture.supplyAsync(
                 () -> {

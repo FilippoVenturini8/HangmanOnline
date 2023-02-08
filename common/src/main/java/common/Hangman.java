@@ -5,6 +5,8 @@ import java.util.List;
 public interface Hangman {
     void connectUser(User user) throws ConflictException;
 
+    void disconnectUser(String nicknameUser) throws MissingException;
+
     User findUser(String nicknameUser) throws MissingException;
 
     int createLobby(String nicknameUser) throws MissingException;

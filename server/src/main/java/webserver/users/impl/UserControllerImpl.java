@@ -48,9 +48,19 @@ public class UserControllerImpl extends AbstractController implements UserContro
     }
 
     @Override
+    public void deleteUser(Context context) throws HttpResponseException {
+        UserApi api = getApi(context);
+
+        var nicknameUser = context.pathParam("{userId}");
+        var futureResult = api.disconnectUser(nicknameUser);
+        asyncReplyWithoutBody(context,"application/json", futureResult);
+    }
+
+    @Override
     public void registerRoutes(Javalin app) {
         app.before(path("*"), Filters.ensureClientAcceptsMimeType("application", "json"));
         app.post(path("/"), this::postUser);
         app.get(path("/{userId}"), this::getUser);
+        app.delete(path("/{userId}"), this::deleteUser);
     }
 }

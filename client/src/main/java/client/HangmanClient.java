@@ -29,8 +29,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 .POST(body(user))
                 .build();
         return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeOne(String.class));
+                .thenComposeAsync(checkResponse());
     }
 
     @Override
@@ -39,6 +38,24 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             connectUserAsync(user).join();
         } catch (CompletionException e) {
             throw getCauseAs(e, ConflictException.class);
+        }
+    }
+
+    private CompletableFuture<?> disconnectUserAsync(String nicknameUser){
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/users/"+nicknameUser))
+                .DELETE()
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse());
+    }
+
+    @Override
+    public void disconnectUser(String nicknameUser) throws MissingException {
+        try {
+            disconnectUserAsync(nicknameUser).join();
+        }catch (CompletionException e){
+            throw getCauseAs(e, MissingException.class);
         }
     }
 
@@ -89,8 +106,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 .PUT(body(nicknameUser))
                 .build();
         return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeOne(String.class));
+                .thenComposeAsync(checkResponse());
     }
 
     @Override
@@ -150,8 +166,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 .POST(body(game))
                 .build();
         return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeOne(String.class));
+                .thenComposeAsync(checkResponse());
     }
 
     @Override
@@ -244,6 +259,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
         boolean nickNameOk = false;
         boolean wrongOption = false;
+        boolean exit = false;
 
         User actualUser = null;
 
@@ -263,6 +279,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             System.out.println("\n######### MENU ####################");
             System.out.println("[1] Crea una lobby");
             System.out.println("[2] Visualizza la lista delle lobby");
+            System.out.println("[3] Esci");
             System.out.println("###################################\n");
 
             System.out.print("Seleziona un'operazione: ");
@@ -329,9 +346,22 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     }
 
                     break;
+
+                case "3":
+                    try {
+                        client.disconnectUser(actualUser.getNickName());
+                    } catch (MissingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    exit = true;
+                    break;
                 default:
                     wrongOption = true;
                     break;
+            }
+
+            if(exit){
+                break;
             }
 
             if(wrongOption){

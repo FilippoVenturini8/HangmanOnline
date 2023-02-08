@@ -10,6 +10,8 @@ public interface UserController extends Controller {
 
     void getUser(Context context) throws HttpResponseException;
 
+    void deleteUser(Context context) throws HttpResponseException;
+
     static UserController of(String root) {
         return new UserControllerImpl(root);
     }
