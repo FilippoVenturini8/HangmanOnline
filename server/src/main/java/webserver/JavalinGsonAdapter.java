@@ -23,7 +23,7 @@ public class JavalinGsonAdapter implements JsonMapper {
 //        try {
         return gson.fromJson(json, targetType);
 //        } catch (JsonParseException e) {
-//            TODO throw adequate exception
+
 //        }
     }
 }

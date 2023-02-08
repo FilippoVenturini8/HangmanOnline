@@ -27,10 +27,13 @@ public class UserDeserializer implements JsonDeserializer<User> {
 
     @Override
     public User deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        var object = json.getAsJsonObject();
-        var nickName = getPropertyAsString(object, "nickname");
-        GameRole gameRole = getPropertyAs(object, "gameRole", GameRole.class, context);
-        //TODO FORSE AGGIUNGERE LA CLASS CAST EXCEPTION
-        return new User(nickName, gameRole);
+        try {
+            var object = json.getAsJsonObject();
+            var nickName = getPropertyAsString(object, "nickname");
+            GameRole gameRole = getPropertyAs(object, "gameRole", GameRole.class, context);
+            return new User(nickName, gameRole);
+        } catch (ClassCastException e) {
+            throw new JsonParseException("Invalid user: " + json, e);
+        }
     }
 }

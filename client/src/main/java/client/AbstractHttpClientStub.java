@@ -48,11 +48,7 @@ public class AbstractHttpClientStub {
                 return CompletableFuture.failedFuture(new IllegalArgumentException(response.body()));
             }else if (response.statusCode() == 409) { // conflict
                 return CompletableFuture.failedFuture(new ConflictException(response.body()));
-            }
-            //TODO AGGIUNGERE ECCEZIONI GIUSTE
-            /*else if (response.statusCode() == 401) { // unauthorized
-                return CompletableFuture.failedFuture(new WrongCredentialsException(response.body()));
-            } */else if (response.statusCode() == 404) { // not found
+            }else if (response.statusCode() == 404) { // not found
                 return CompletableFuture.failedFuture(new MissingException(response.body()));
             } else {
                 return CompletableFuture.failedFuture(
@@ -124,6 +120,4 @@ public class AbstractHttpClientStub {
             return promise;
         };
     }
-
-    //TODO aggiungere la serializzazione e deserializzazione
 }

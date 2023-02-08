@@ -31,30 +31,34 @@ public class GameDeserializer implements JsonDeserializer<Game> {
 
     @Override
     public Game deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        var object = json.getAsJsonObject();
+        try {
+            var object = json.getAsJsonObject();
 
-        int round = getPropertyAs(object, "round", Integer.class, context);
-        int attempts = getPropertyAs(object, "attempts", Integer.class, context);
-        var toGuess = getPropertyAsString(object, "toGuess");
-        var encodedToGuess = getPropertyAsString(object, "encodedToGuess");
-        var guesserRoundWon = getPropertyAs(object, "guesserRoundWon", Boolean.class, context);
+            int round = getPropertyAs(object, "round", Integer.class, context);
+            int attempts = getPropertyAs(object, "attempts", Integer.class, context);
+            var toGuess = getPropertyAsString(object, "toGuess");
+            var encodedToGuess = getPropertyAsString(object, "encodedToGuess");
+            var guesserRoundWon = getPropertyAs(object, "guesserRoundWon", Boolean.class, context);
 
-        var playersArray = object.getAsJsonArray("players");
+            var playersArray = object.getAsJsonArray("players");
 
-        List<User> players = new ArrayList<>(playersArray.size());
-        for (JsonElement item : playersArray) {
-            if (item.isJsonNull()) continue;
-            players.add(context.deserialize(item, User.class)); //TODO NOME PROPRIETà ?
+            List<User> players = new ArrayList<>(playersArray.size());
+            for (JsonElement item : playersArray) {
+                if (item.isJsonNull()) continue;
+                players.add(context.deserialize(item, User.class));
+            }
+
+            var resultsArray = object.getAsJsonArray("results");
+
+            List<Integer> results = new ArrayList<>(resultsArray.size());
+            for (JsonElement item : resultsArray) {
+                if (item.isJsonNull()) continue;
+                results.add(item.getAsInt());
+            }
+
+            return new Game(round, attempts, toGuess, encodedToGuess, players, results, guesserRoundWon);
+        }catch (ClassCastException | NullPointerException e){
+            throw new JsonParseException("Invalid game: " + json, e);
         }
-
-        var resultsArray = object.getAsJsonArray("results");
-
-        List<Integer> results = new ArrayList<>(resultsArray.size());
-        for (JsonElement item : resultsArray) {
-            if (item.isJsonNull()) continue;
-            results.add(item.getAsInt()); //TODO NOME PROPRIETà ?
-        }
-
-        return new Game(round, attempts, toGuess, encodedToGuess, players, results, guesserRoundWon);
     }
 }

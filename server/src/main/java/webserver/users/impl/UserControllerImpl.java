@@ -1,5 +1,6 @@
 package webserver.users.impl;
 
+import com.google.gson.JsonParseException;
 import common.User;
 import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
@@ -22,20 +23,11 @@ public class UserControllerImpl extends AbstractController implements UserContro
 
     @Override
     public void postUser(Context context) throws HttpResponseException {
-        try{
-            UserApi api = getApi(context);
-            var user = context.bodyAsClass(User.class);
+        UserApi api = getApi(context);
+        var user = context.bodyAsClass(User.class);
 
-            var futureResult = api.connectUser(user);
-            asyncReplyWithoutBody(context, "application/json", futureResult);
-        }/*catch (JsonParseException e){
-            throw new BadRequestResponse();
-        }*/
-        catch (Exception e){
-            //TODO Aggiungere eccezione
-            System.out.println("ERRORE POST USER IN USER CONTROLLER");
-            System.out.println(e);
-        }
+        var futureResult = api.connectUser(user);
+        asyncReplyWithoutBody(context, "application/json", futureResult);
     }
 
     @Override

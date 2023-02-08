@@ -212,13 +212,11 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     @Override
-    public String setWordToGuess(int idLobby, String toGuess) {
+    public String setWordToGuess(int idLobby, String toGuess)throws MissingException {
         try {
            return setWordToGuessAsync(idLobby, toGuess).join();
         }catch (CompletionException e) {
-            //throw getCauseAs(e, MissingException.class);
-            return "";
-            //TODO ECCEZIONE?
+            throw getCauseAs(e, MissingException.class);
         }
     }
 
@@ -249,8 +247,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         try {
             return getGameAsync(idLobby).join();
         }catch (CompletionException e){
-            // TODO ECCEZIONE?
-            return null;
+            throw getCauseAs(e, MissingException.class);
         }
     }
 
@@ -270,8 +267,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         try {
             return tryToGuessAsync(idLobby, attempt).join();
         }catch (CompletionException e){
-            return null;
-            //TODO ECCEZIONE?
+            throw getCauseAs(e, MissingException.class);
         }
     }
 
@@ -317,11 +313,11 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     try {
                         lobbyId = client.createLobby(actualUser.getNickName());
                     } catch (MissingException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException(e.getMessage());
                     }
                     System.out.println("\n###################################");
                     System.out.println("Lobby: "+lobbyId);
-                    System.out.println("In attesa di un altro giocatore...");
+                    System.out.println("\nIn attesa di un altro giocatore...");
                     System.out.println("###################################");
                     try {
                         while (true){
@@ -376,7 +372,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     try {
                         client.startGame(Integer.valueOf(lobbyId), new Game());
                     } catch (MissingException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException(e.getMessage());
                     }
 
                     break;
@@ -385,7 +381,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     try {
                         client.disconnectUser(actualUser.getNickName());
                     } catch (MissingException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException(e.getMessage());
                     }
                     exit = true;
                     break;
@@ -412,14 +408,12 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 try {
                     client.deleteLobby(lobbyId);
                 } catch (MissingException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(e.getMessage());
                 }
             }
 
             System.out.println("\nPartita terminata.");
         }
-
-
     }
 
     private boolean oneRound(User actualUser, int idLobby) {
@@ -432,6 +426,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
         try {
             GameRole myRole = this.findUser(actualUser.getNickName()).getGameRole();
+
 
             System.out.println("\n-----------");
             System.out.println(""+myRole+"");
@@ -550,7 +545,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             }
 
         } catch (MissingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

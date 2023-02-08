@@ -12,7 +12,6 @@ public class GsonUtils {
         return new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .serializeNulls()
-                //TODO AGGIUNGERE I SERIALIZZATORI E DESERIALIZZATORI
                 .registerTypeAdapter(User.class, new UserSerializer())
                 .registerTypeAdapter(User.class, new UserDeserializer())
                 .registerTypeAdapter(Lobby.class, new LobbySerializer())

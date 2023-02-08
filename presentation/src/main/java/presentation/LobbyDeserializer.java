@@ -31,23 +31,27 @@ public class LobbyDeserializer implements JsonDeserializer<Lobby> {
 
     @Override
     public Lobby deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        var object = json.getAsJsonObject();
+        try {
+            var object = json.getAsJsonObject();
 
-        var id = getPropertyAs(object, "id", Integer.class, context);
+            var id = getPropertyAs(object, "id", Integer.class, context);
 
-        var usersArray = object.getAsJsonArray("users");
+            var usersArray = object.getAsJsonArray("users");
 
-        List<User> users = new ArrayList<>(usersArray.size());
-        for (JsonElement item : usersArray) {
-            if (item.isJsonNull()) continue;
-            users.add(context.deserialize(item, User.class)); //TODO NOME PROPRIETà ?
+            List<User> users = new ArrayList<>(usersArray.size());
+            for (JsonElement item : usersArray) {
+                if (item.isJsonNull()) continue;
+                users.add(context.deserialize(item, User.class));
+            }
+
+            Lobby lobby = new Lobby(id);
+            for(User user : users){
+                lobby.addUser(user);
+            }
+
+            return lobby;
+        }catch (ClassCastException | NullPointerException e){
+            throw new JsonParseException("Invalid lobby: " + json, e);
         }
-
-        Lobby lobby = new Lobby(id);
-        for(User user : users){
-            lobby.addUser(user);
-        }
-
-        return lobby;
     }
 }
