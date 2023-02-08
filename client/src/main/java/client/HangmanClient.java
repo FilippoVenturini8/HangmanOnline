@@ -33,11 +33,15 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     @Override
-    public void connectUser(User user) throws ConflictException{
+    public void connectUser(User user) throws ConflictException, IllegalArgumentException{
         try {
             connectUserAsync(user).join();
         } catch (CompletionException e) {
-            throw getCauseAs(e, ConflictException.class);
+            if(e.getCause() instanceof ConflictException){
+                throw getCauseAs(e, ConflictException.class);
+            }else if(e.getCause() instanceof IllegalArgumentException){
+                throw getCauseAs(e, IllegalArgumentException.class);
+            }
         }
     }
 
@@ -289,6 +293,9 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 nickNameOk = true;
             } catch (ConflictException e) {
                 System.out.println("Il nickname inserito è già in uso!");
+                nickNameOk = false;
+            }catch (IllegalArgumentException e){
+                System.out.println("Il nickname inserito non può essere vuoto!");
                 nickNameOk = false;
             }
         }

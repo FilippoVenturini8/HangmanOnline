@@ -12,10 +12,10 @@ public class LocalHangman implements Hangman{
     private int lobbiesCounter = 0;
 
     @Override
-    public void connectUser(User user) throws ConflictException{
+    public void connectUser(User user) throws ConflictException, IllegalArgumentException{
         var copy = new User(user.getNickName()); //Defensive copy
         if (copy.getNickName() == null || copy.getNickName().isBlank()) {
-            //TODO AGGIUNGERE ECCEZIONE: NICKNAME VUOTO
+            throw new IllegalArgumentException("Il nickname non può essere vuoto!");
         }
         if(users.contains(copy)){
             throw new ConflictException("Nickname " + copy.getNickName() + " già in uso!");

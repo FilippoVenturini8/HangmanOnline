@@ -3,7 +3,7 @@ package common;
 import java.util.List;
 
 public interface Hangman {
-    void connectUser(User user) throws ConflictException;
+    void connectUser(User user) throws ConflictException, IllegalArgumentException;
 
     void disconnectUser(String nicknameUser) throws MissingException;
 

@@ -4,6 +4,7 @@ import common.ConflictException;
 import common.Hangman;
 import common.MissingException;
 import common.User;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ConflictResponse;
 import io.javalin.http.NotFoundResponse;
 import webserver.AbstractApi;
@@ -26,10 +27,8 @@ public class UserApiImpl extends AbstractApi implements UserApi {
                         return null;
                     }catch (ConflictException e) {
                         throw new ConflictResponse();
-                    }catch (Exception e){
-                        //TODO aggiungere eccezione
-                        System.out.println("ERRORE CONNESSIONE UTENTE");
-                        return null;
+                    }catch (IllegalArgumentException e){
+                        throw new BadRequestResponse();
                     }
                 }
         );
