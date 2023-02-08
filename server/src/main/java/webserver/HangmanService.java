@@ -7,6 +7,7 @@ import webserver.games.GameController;
 import webserver.lobbies.LobbyController;
 import webserver.users.UserController;
 import webserver.utils.Filters;
+import webserver.utils.Plugins;
 
 public class HangmanService {
 
@@ -27,6 +28,9 @@ public class HangmanService {
         server = Javalin.create(config -> {
             config.plugins.enableDevLogging();
             config.jsonMapper(new JavalinGsonAdapter(GsonUtils.createGson()));
+            config.plugins.register(Plugins.openApiPlugin(API_VERSION, "/doc"));
+            config.plugins.register(Plugins.swaggerPlugin("/doc", "/ui"));
+            config.plugins.register(Plugins.routeOverviewPlugin("/routes"));
         });
 
         //Put the instance of the LocalHangman in the context. (The get will be done by the Controllers)

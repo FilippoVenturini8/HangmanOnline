@@ -42,18 +42,19 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(nickName, user.nickName);
+        return Objects.equals(nickName, user.nickName) && gameRole == user.gameRole;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nickName);
+        return Objects.hash(nickName, gameRole);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "nickName='" + nickName + '\'' +
+                ", gameRole=" + gameRole +
                 '}';
     }
 }

@@ -1,0 +1,132 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "",
+    "version": ""
+  },
+  "paths": {
+    "/hangman/v0.1.0/users": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "description": "Connect a new user to the system",
+        "operationId": "UserApi::connectUser",
+        "parameters": [],
+        "requestBody": {
+          "description": "The user\u0027s data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The nickname provided is correct, the user is now connected to the system. Nothing is returned."
+          },
+          "400": {
+            "description": "Bad request: the nickname can\u0027t be empty"
+          },
+          "409": {
+            "description": "Conflict: the nickname has already been taken"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/hangman/v0.1.0/users/{userId}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "description": "Gets the data of a user, given it\u0027s nickname.",
+        "operationId": "UserApi::findUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Nickname of the user",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The provided nickname corresponds to a user, whose data is thus returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found: the provided nickname corresponds to no known user"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "description": "Deletes a user, given it\u0027s nickname",
+        "operationId": "UserApi::disconnectUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The nickname of the user to remove",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The provided nickname corresponds to a user, which is thus removed. Nothing is returned"
+          },
+          "404": {
+            "description": "Not found: the provided nickname corresponds to no known user"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "nickName": {
+            "type": "string"
+          },
+          "gameRole": {
+            "type": "string",
+            "enum": [
+              "NOT_IN_GAME",
+              "CHOOSER",
+              "GUESSER"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
