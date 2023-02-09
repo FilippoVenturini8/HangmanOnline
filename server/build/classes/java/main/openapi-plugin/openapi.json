@@ -5,6 +5,145 @@
     "version": ""
   },
   "paths": {
+    "/hangman/v0.1.0/lobbies": {
+      "post": {
+        "tags": [
+          "lobbies"
+        ],
+        "description": "Create a new Lobby",
+        "operationId": "LobbyApi::createLobby",
+        "parameters": [],
+        "requestBody": {
+          "description": "The creator\u0027s nickname",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The nickname provided is correct, the lobby is created and it\u0027s id returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found: the provided nickname corresponds to no known user"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      },
+      "get": {
+        "tags": [
+          "lobbies"
+        ],
+        "description": "Retrieves all lobbies",
+        "operationId": "LobbyApi::getAllLobbies",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A List containing all the system\u0027s lobbies.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Lobby"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/hangman/v0.1.0/lobbies/{lobbyId}": {
+      "delete": {
+        "tags": [
+          "lobbies"
+        ],
+        "description": "Deletes a lobby, given it\u0027s id",
+        "operationId": "LobbyApi::deleteLobby",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "path",
+            "description": "The id of the lobby to remove",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The provided id corresponds to a lobby, which is thus removed. Nothing is returned"
+          },
+          "404": {
+            "description": "Not found: the provided id corresponds to not existing lobby"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      },
+      "get": {
+        "tags": [
+          "lobbies"
+        ],
+        "description": "Put the user corresponding to the nickname passed, in the lobby corresponding to the id passed.",
+        "operationId": "LobbyApi::addUserToLobby",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "path",
+            "description": "Id of the lobby",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The user\u0027s nickname",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The provided id corresponds to a lobby, the user is now connected to the lobby, nothing is returned"
+          },
+          "404": {
+            "description": "Not found: the provided id corresponds to not existing lobby"
+          },
+          "409": {
+            "description": "Conflict: the lobby is full"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
     "/hangman/v0.1.0/users": {
       "post": {
         "tags": [
@@ -111,6 +250,36 @@
   },
   "components": {
     "schemas": {
+      "Lobby": {
+        "type": "object",
+        "properties": {
+          "full": {
+            "type": "boolean"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "connectedUserNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "game": {
+            "$ref": "#/components/schemas/Game"
+          }
+        },
+        "required": [
+          "full",
+          "id",
+          "connectedUserNumber"
+        ]
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -126,6 +295,59 @@
             ]
           }
         }
+      },
+      "Game": {
+        "type": "object",
+        "properties": {
+          "roundWon": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "round": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "players": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "wordToGuess": {
+            "type": "string"
+          },
+          "encodedWordToGuess": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "guesserRoundWon": {
+            "type": "boolean"
+          },
+          "neededExtraRound": {
+            "type": "boolean"
+          },
+          "gameFinished": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "roundWon",
+          "round",
+          "attempts",
+          "guesserRoundWon",
+          "neededExtraRound",
+          "gameFinished"
+        ]
       }
     }
   }
