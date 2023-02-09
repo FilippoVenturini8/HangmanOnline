@@ -62,6 +62,12 @@ public class TestRemoteHangman extends AbstractTestHangman{
 
     @Override
     @Test
+    public void testLobbyElimination() throws MissingException {
+        super.testLobbyElimination();
+    }
+
+    @Override
+    @Test
     public void testLobbyCreationError() {
         super.testLobbyCreationError();
     }

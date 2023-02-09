@@ -87,7 +87,25 @@ public abstract class AbstractTestHangman {
         assertEquals(idLobbyPietro, hangman.getAllLobbies().get(2).getId());
     }
 
-    public void testLobbyCreationError(){
+    public void testLobbyElimination() throws MissingException {
+        int idLobbyFilippo = hangman.createLobby(filippo.getNickName());
+        int idLobbyAlberto = hangman.createLobby(alberto.getNickName());
+        int idLobbyPietro = hangman.createLobby(pietro.getNickName());
+
+        hangman.deleteLobby(idLobbyFilippo);
+        assertThrows(MissingException.class, () -> hangman.getLobby(idLobbyFilippo));
+        assertThrows(MissingException.class, () -> hangman.getGame(idLobbyFilippo));
+
+        hangman.deleteLobby(idLobbyAlberto);
+        assertThrows(MissingException.class, () -> hangman.getLobby(idLobbyAlberto));
+        assertThrows(MissingException.class, () -> hangman.getGame(idLobbyAlberto));
+
+        hangman.deleteLobby(idLobbyPietro);
+        assertThrows(MissingException.class, () -> hangman.getLobby(idLobbyPietro));
+        assertThrows(MissingException.class, () -> hangman.getGame(idLobbyPietro));
+    }
+
+    public void testLobbyCreationError() {
         assertThrows(MissingException.class, () -> hangman.createLobby(nicolo.getNickName()));
         assertThrows(MissingException.class, () -> hangman.createLobby(marco.getNickName()));
         assertThrows(MissingException.class, () -> hangman.createLobby(martin.getNickName()));

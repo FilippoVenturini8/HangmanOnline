@@ -58,8 +58,11 @@ public class LocalHangman implements Hangman{
     @Override
     public void deleteLobby(int idLobby) throws MissingException {
         Lobby toDelete = this.getLobby(idLobby);
-        toDelete.getUsers().get(0).setAsNotInGame();
-        toDelete.getUsers().get(1).setAsNotInGame();
+
+        for(User user : toDelete.getUsers()){
+            user.setAsNotInGame();
+        }
+
         this.lobbies.remove(toDelete);
     }
 
