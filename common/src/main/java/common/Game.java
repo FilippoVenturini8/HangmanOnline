@@ -107,7 +107,7 @@ public class Game {
         if(attempt.length() == 1){ //Only one letter
             char attemptLetter = attempt.toLowerCase().charAt(0);
             for(int i = 0; i < this.wordToGuess.length(); i++){
-                if(attemptLetter == this.wordToGuess.charAt(i)){
+                if(attemptLetter == this.wordToGuess.charAt(i) && attemptLetter != this.encodedWordToGuess.charAt(i)){ //The char is correct and not yet guessed
                     if(i == this.encodedWordToGuess.length()-1){ //Last character
                         this.encodedWordToGuess = this.encodedWordToGuess.substring(0,i) + attemptLetter;
                     }else{

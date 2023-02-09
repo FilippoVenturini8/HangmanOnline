@@ -428,9 +428,9 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             GameRole myRole = this.findUser(actualUser.getNickName()).getGameRole();
 
 
-            System.out.println("\n-----------");
-            System.out.println(""+myRole+"");
-            System.out.println("-----------\n");
+            System.out.println("\n***********");
+            System.out.println("* "+myRole+" *");
+            System.out.println("***********\n");
 
             String encodedToGuess = null;
             switch (myRole){
@@ -467,11 +467,12 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         }
 
                         if(!game.getEncodedWordToGuess().equals(encodedToGuess) || actualAttempts != game.getAttempts()){
-                            printHangman(game.getAttempts());
+                            System.out.println("-----------------------------------");
+                            System.out.println("| Round vinti: " + game.getRoundWon(actualUser) + "/2                |");
+                            System.out.println("| Tentativi rimasti al guesser: "+game.getAttempts()+" |");
+                            System.out.println("-----------------------------------\n");
 
-                            System.out.println("------------------------");
-                            System.out.println("| Round vinti: " + game.getRoundWon(actualUser) + "/2     |");
-                            System.out.println("------------------------\n");
+                            printHangman(game.getAttempts());
 
                             encodedToGuess = game.getEncodedWordToGuess();
 
@@ -486,7 +487,7 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     }
                     break;
                 case GUESSER:
-                    System.out.println("In attesa della parola scelta...");
+                    System.out.println("In attesa che l'altro giocatore scelga la parola...");
                     while (encodedToGuess == null || encodedToGuess.equals("")){
                         game = this.getGame(idLobby);
                         encodedToGuess = game.getEncodedWordToGuess();
