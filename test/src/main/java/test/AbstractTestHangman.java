@@ -58,6 +58,19 @@ public abstract class AbstractTestHangman {
         assertEquals(marco, hangman.findUser(marco.getNickName()));
     }
 
+    public void testUserDisconnections() throws ConflictException, MissingException {
+        hangman.connectUser(nicolo);
+        hangman.connectUser(martin);
+        hangman.connectUser(marco);
+
+        hangman.disconnectUser(nicolo.getNickName());
+        assertThrows(MissingException.class, () -> hangman.findUser(nicolo.getNickName()));
+        hangman.disconnectUser(martin.getNickName());
+        assertThrows(MissingException.class, () -> hangman.findUser(martin.getNickName()));
+        hangman.disconnectUser(marco.getNickName());
+        assertThrows(MissingException.class, () -> hangman.findUser(marco.getNickName()));
+    }
+
     public void testConnectionError(){
         assertThrows(ConflictException.class, () -> hangman.connectUser(filippo));
         assertThrows(ConflictException.class, () -> hangman.connectUser(alberto));
@@ -97,8 +110,8 @@ public abstract class AbstractTestHangman {
         hangman.startGame(idLobbyFilippo, new Game());
 
         assertEquals(5, hangman.getGame(idLobbyFilippo).getAttempts());
-        assertEquals(filippo, hangman.getGame(idLobbyFilippo).getPlayers().get(0));
-        assertEquals(alberto, hangman.getGame(idLobbyFilippo).getPlayers().get(1));
+        assertEquals(filippo.getNickName(), hangman.getGame(idLobbyFilippo).getPlayers().get(0).getNickName());
+        assertEquals(alberto.getNickName(), hangman.getGame(idLobbyFilippo).getPlayers().get(1).getNickName());
         assertEquals(List.of(0,0), hangman.getGame(idLobbyFilippo).getResults());
         assertEquals("", hangman.getGame(idLobbyFilippo).getEncodedWordToGuess());
 

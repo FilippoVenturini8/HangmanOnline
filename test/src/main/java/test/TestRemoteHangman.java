@@ -44,6 +44,12 @@ public class TestRemoteHangman extends AbstractTestHangman{
 
     @Override
     @Test
+    public void testUserDisconnections() throws ConflictException, MissingException {
+        super.testUserDisconnections();
+    }
+
+    @Override
+    @Test
     public void testConnectionError() {
         super.testConnectionError();
     }
