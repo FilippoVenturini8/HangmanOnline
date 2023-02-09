@@ -39,7 +39,7 @@ public class Game {
     }
 
     public int getRoundWon(User player){
-        return this.players.get(0).equals(player) ? this.results.get(0) : this.results.get(1);
+        return this.players.get(0).getNickName().equals(player.getNickName()) ? this.results.get(0) : this.results.get(1);
     }
 
     public List<Integer> getResults(){

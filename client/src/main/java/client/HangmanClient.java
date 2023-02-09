@@ -288,10 +288,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 client.connectUser(actualUser);
                 nickNameOk = true;
             } catch (ConflictException e) {
-                System.out.println("Il nickname inserito è già in uso!");
+                System.out.println("Nickname inserito gia in uso.");
                 nickNameOk = false;
             }catch (IllegalArgumentException e){
-                System.out.println("Il nickname inserito non può essere vuoto!");
+                System.out.println("Il nickname inserito non puo essere vuoto.");
                 nickNameOk = false;
             }
         }
@@ -357,10 +357,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                             client.joinLobby(lobbyId, actualUser.getNickName());
                             lobbyOk = true;
                         }catch (MissingException e){
-                            System.out.println("\nLa lobby selezionata non è presente.");
+                            System.out.println("\nLobby selezionata non presente.");
                             lobbyOk = false;
                         }catch (ConflictException e){
-                            System.out.println("\nLa lobby selezionata è piena.");
+                            System.out.println("\nLobby piena.");
                             lobbyOk = false;
                         }
                     }
@@ -518,6 +518,9 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
                         System.out.print("Inserire una lettera o una parola: ");
                         String attempt = scanner.nextLine();
+                        if(game.getAttempts() == 1){
+                            System.out.println("");
+                        }
                         boolean guessed = this.tryToGuess(idLobby, attempt);
                         game = this.getGame(idLobby);
 

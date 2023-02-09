@@ -126,6 +126,9 @@ public class LocalHangman implements Hangman{
         Game game = this.getGame(idLobby);
 
         boolean guessed = game.tryToGuess(attempt);
+        if(game.getAttempts() == 0){
+            System.out.println("");
+        }
         if(game.getAttempts() == 0 && !game.getGuesserRoundWon()){
             game.incWon(GameRole.CHOOSER);
             if(game.getRound() == 1){ //Done only one round, the second is mandatory
