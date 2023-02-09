@@ -458,6 +458,8 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
                         if(actualRound != initialRound || game.isGameFinished()){ //Next Round
                             if(game.getRoundWon(actualUser) > previousRoundWon){
+                                printHangman(0);
+
                                 System.out.println("ROUND VINTO!");
                             }else {
                                 System.out.println("ROUND PERSO!");
@@ -537,7 +539,11 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                             System.out.println("ERRORE!");
                         }
 
-                        printHangman(game.getAttempts());
+                        if(actualRound != initialRound && game.getRoundWon(actualUser) == previousRoundWon){ //Print the last hangman
+                            printHangman(0);
+                        }else{
+                            printHangman(game.getAttempts());
+                        }
 
                         for(String c : game.getEncodedWordToGuess().split("")){
                             System.out.print(c+" ");
