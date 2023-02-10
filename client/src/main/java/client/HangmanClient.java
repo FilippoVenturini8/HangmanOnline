@@ -465,10 +465,15 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         actualRound = game.getRound();
 
                         if(actualRound != initialRound || game.isGameFinished()){ //Next Round
-                            if(game.getRoundWon(actualUser) > previousRoundWon){
-                                printRoundTable(game.getRoundWon(actualUser), 0, false);
-                                printHangman(0);
+                            if(!game.isGameFinished()){
+                                printRoundTable(game.getRoundWon(actualUser), game.getLastRoundAttempts(), false);
+                                printHangman(game.getLastRoundAttempts());
+                            }else {
+                                printRoundTable(game.getRoundWon(actualUser), game.getAttempts(), false);
+                                printHangman(game.getAttempts());
+                            }
 
+                            if(game.getRoundWon(actualUser) > previousRoundWon){
                                 System.out.println("ROUND VINTO!");
                             }else {
                                 System.out.println("ROUND PERSO!");
@@ -514,14 +519,17 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     previousRoundWon = game.getRoundWon(actualUser);
 
                     while(true){
-
                         if(actualRound != initialRound || game.isGameFinished()){ //Next Round
+                            if(!game.isGameFinished()){
+                                printRoundTable(game.getRoundWon(actualUser), game.getLastRoundAttempts(), false);
+                                printHangman(game.getLastRoundAttempts());
+                            }else {
+                                printRoundTable(game.getRoundWon(actualUser), game.getAttempts(), false);
+                                printHangman(game.getAttempts());
+                            }
                             if(game.getRoundWon(actualUser) > previousRoundWon){
                                 System.out.println("ROUND VINTO!");
                             }else {
-                                printRoundTable(game.getRoundWon(actualUser), 0, true);
-                                printHangman(0);
-
                                 System.out.println("ROUND PERSO!");
                             }
                             gameFinished = game.isGameFinished();
@@ -537,6 +545,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                         game = this.getGame(idLobby);
 
                         actualRound = game.getRound();
+
+                        if(actualRound != initialRound || game.isGameFinished()){
+                            continue; //The last attempt of the round the print is above
+                        }
 
                         this.printRoundTable(game.getRoundWon(actualUser), game.getAttempts(), true);
 

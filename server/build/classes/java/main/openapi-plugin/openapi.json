@@ -421,6 +421,10 @@
           "encodedWordToGuess": {
             "type": "string"
           },
+          "lastRoundAttempts": {
+            "type": "integer",
+            "format": "int32"
+          },
           "attempts": {
             "type": "integer",
             "format": "int32"
@@ -438,6 +442,7 @@
         "required": [
           "roundWon",
           "round",
+          "lastRoundAttempts",
           "attempts",
           "guesserRoundWon",
           "neededExtraRound",
