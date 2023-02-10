@@ -88,6 +88,10 @@ public interface GameController extends Controller {
                     @OpenApiResponse(
                             status = "404",
                             description = "Not found: the provided id corresponds to not existing lobby"
+                    ),
+                    @OpenApiResponse(
+                            status = "400",
+                            description = "Bad request: the provided string does not contains only letters"
                     )
             }
     )

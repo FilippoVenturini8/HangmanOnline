@@ -3,6 +3,7 @@ package webserver.games.impl;
 import common.Game;
 import common.Hangman;
 import common.MissingException;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.NotFoundResponse;
 import webserver.AbstractApi;
 import webserver.games.GameApi;
@@ -36,6 +37,8 @@ public class GameApiImpl extends AbstractApi implements GameApi {
                         return storage().setWordToGuess(idLobby, toGuess);
                     } catch (MissingException e) {
                         throw new NotFoundResponse();
+                    } catch (IllegalArgumentException e){
+                        throw new BadRequestResponse();
                     }
                 }
         );

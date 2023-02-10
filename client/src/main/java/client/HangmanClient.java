@@ -212,11 +212,16 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
     }
 
     @Override
-    public String setWordToGuess(int idLobby, String toGuess)throws MissingException {
+    public String setWordToGuess(int idLobby, String toGuess)throws MissingException, IllegalArgumentException {
         try {
            return setWordToGuessAsync(idLobby, toGuess).join();
         }catch (CompletionException e) {
-            throw getCauseAs(e, MissingException.class);
+            if(e.getCause() instanceof MissingException){
+                throw getCauseAs(e, MissingException.class);
+            }
+            else {
+                throw getCauseAs(e, IllegalArgumentException.class);
+            }
         }
     }
 
@@ -443,9 +448,20 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
             String encodedToGuess = null;
             switch (myRole){
                 case CHOOSER:
-                    System.out.print("Parola da far indovinare: ");
-                    String toGuess = scanner.nextLine();
-                    encodedToGuess = this.setWordToGuess(idLobby, toGuess);
+                    boolean wordOk = false;
+                    String toGuess = "";
+
+                    while (!wordOk){
+                        try {
+                            System.out.print("Parola da far indovinare: ");
+                            toGuess = scanner.nextLine();
+                            encodedToGuess = this.setWordToGuess(idLobby, toGuess);
+                            wordOk = true;
+                        }catch (IllegalArgumentException e){
+                            System.out.println("La parola deve contenere solo lettere.");
+                            wordOk = false;
+                        }
+                    }
 
                     System.out.print('\n');
 

@@ -108,7 +108,10 @@ public class LocalHangman implements Hangman{
     }
 
     @Override
-    public String setWordToGuess(int idLobby, String toGuess) throws MissingException {
+    public String setWordToGuess(int idLobby, String toGuess) throws MissingException, IllegalArgumentException{
+        if(!toGuess.chars().allMatch(Character::isLetter)){
+            throw new IllegalArgumentException("La parola da indovinare deve contenere solo lettere.");
+        }
         Game game = this.getGame(idLobby);
         game.setWordToGuess(toGuess);
         game.encodeWordToGuess();
