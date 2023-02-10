@@ -20,7 +20,12 @@ public class Lobby {
     }
 
     public void removeUser(User user){
-        this.users.remove(user);
+        if(this.users.contains(user)){
+            this.users.remove(user);
+        }
+        if(this.game != null){
+            this.game.removePlayer(user);
+        }
     }
 
     public boolean isFull(){

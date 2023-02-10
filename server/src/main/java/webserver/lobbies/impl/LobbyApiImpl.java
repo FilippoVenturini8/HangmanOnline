@@ -81,4 +81,18 @@ public class LobbyApiImpl extends AbstractApi implements LobbyApi {
                 }
         );
     }
+
+    @Override
+    public CompletableFuture<Void> disconnectUseFromLobby(int lobbyId, String nicknameUser) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    try {
+                        storage().exitLobby(lobbyId, nicknameUser);
+                        return null;
+                    } catch (MissingException e) {
+                        throw new NotFoundResponse();
+                    }
+                }
+        );
+    }
 }

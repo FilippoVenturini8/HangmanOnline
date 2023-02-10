@@ -145,6 +145,25 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
         }
     }
 
+    private CompletableFuture<?> exitLobbyAsync(int idLobby, String nicknameUser) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(resourceUri("/lobbies/exit/"+idLobby))
+                .header("Accept", "application/json")
+                .PUT(body(nicknameUser))
+                .build();
+        return sendRequestToClient(request)
+                .thenComposeAsync(checkResponse());
+    }
+
+    @Override
+    public void exitLobby(int idLobby, String nicknameUser) throws MissingException {
+        try {
+            exitLobbyAsync(idLobby, nicknameUser).join();
+        } catch (CompletionException e) {
+            throw getCauseAs(e, MissingException.class);
+        }
+    }
+
     private CompletableFuture<Lobby> getLobbyAsync(int idLobby) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(resourceUri("/lobbies/"+idLobby))
@@ -223,17 +242,6 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 throw getCauseAs(e, IllegalArgumentException.class);
             }
         }
-    }
-
-    private CompletableFuture<String> getEncodedWordToGuessAsync(int idLobby){
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(resourceUri("/games/"+idLobby))
-                .header("Accept", "application/json")
-                .GET()
-                .build();
-        return sendRequestToClient(request)
-                .thenComposeAsync(checkResponse())
-                .thenComposeAsync(deserializeOne(String.class));
     }
 
     private CompletableFuture<Game> getGameAsync(int idLobby){
@@ -417,7 +425,28 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                 isGameFinished = client.oneRound(actualUser, lobbyId);
             }
 
+            if(option.equals("2")){
+                try {
+                    client.exitLobby(lobbyId, actualUser.getNickName()); //Disconnect the user who joined
+                } catch (MissingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             if(option.equals("1")){ //The creator of the lobby delete it at the end of the game
+                while (true){
+                    try {
+                        Lobby myLobby = client.getLobby(lobbyId);
+                        if(myLobby.getUsers().size() == 1){ //Wait the other user's disconnection for delete the lobby
+                            break;
+                        }
+                        Thread.sleep(500);
+                    } catch (MissingException e) {
+                        throw new RuntimeException(e);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 try {
                     client.deleteLobby(lobbyId);
                 } catch (MissingException e) {
@@ -474,12 +503,10 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                     game = this.getGame(idLobby);
 
                     initialRound = game.getRound();
+                    actualRound = initialRound;
                     previousRoundWon = game.getRoundWon(actualUser);
 
                     while (true){
-                        game = this.getGame(idLobby);
-                        actualRound = game.getRound();
-
                         if(actualRound != initialRound || game.isGameFinished()){ //Next Round
                             if(!game.isGameFinished()){
                                 printRoundTable(game.getRoundWon(actualUser), game.getLastRoundAttempts(), false);
@@ -513,6 +540,9 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
 
                             actualAttempts = game.getAttempts();
                         }
+                        game = this.getGame(idLobby);
+                        actualRound = game.getRound();
+
                         Thread.sleep(500);
                     }
                     break;

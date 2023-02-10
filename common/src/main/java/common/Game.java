@@ -76,6 +76,12 @@ public class Game {
 
     public List<User> getPlayers(){return this.players;}
 
+    public void removePlayer(User user){
+        if(this.players.contains(user)){
+            this.players.remove(user);
+        }
+    }
+
     public String getWordToGuess(){ return this.wordToGuess;}
 
     public void setWordToGuess(String wordToGuess){this.wordToGuess = wordToGuess.toLowerCase();}

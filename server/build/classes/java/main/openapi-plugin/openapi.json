@@ -104,6 +104,73 @@
         "tags": [
           "lobbies"
         ],
+        "description": "Gets the data of a lobby, given it\u0027s id.",
+        "operationId": "LobbyApi::getLobby",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "path",
+            "description": "Id of the lobby",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The provided id corresponds to a lobby, whose data is thus returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lobby"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found: the provided id corresponds to not existing lobby"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      },
+      "delete": {
+        "tags": [
+          "lobbies"
+        ],
+        "description": "Deletes a lobby, given it\u0027s id",
+        "operationId": "LobbyApi::deleteLobby",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "path",
+            "description": "The id of the lobby to remove",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The provided id corresponds to a lobby, which is thus removed. Nothing is returned"
+          },
+          "404": {
+            "description": "Not found: the provided id corresponds to not existing lobby"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      },
+      "put": {
+        "tags": [
+          "lobbies"
+        ],
         "description": "Put the user corresponding to the nickname passed, in the lobby corresponding to the id passed.",
         "operationId": "LobbyApi::addUserToLobby",
         "parameters": [
@@ -139,36 +206,6 @@
           },
           "409": {
             "description": "Conflict: the lobby is full"
-          }
-        },
-        "deprecated": false,
-        "security": []
-      },
-      "delete": {
-        "tags": [
-          "lobbies"
-        ],
-        "description": "Deletes a lobby, given it\u0027s id",
-        "operationId": "LobbyApi::deleteLobby",
-        "parameters": [
-          {
-            "name": "lobbyId",
-            "in": "path",
-            "description": "The id of the lobby to remove",
-            "required": true,
-            "deprecated": false,
-            "allowEmptyValue": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "The provided id corresponds to a lobby, which is thus removed. Nothing is returned"
-          },
-          "404": {
-            "description": "Not found: the provided id corresponds to not existing lobby"
           }
         },
         "deprecated": false,
@@ -282,6 +319,49 @@
                 }
               }
             }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/hangman/v0.1.0/lobbies/exit/{lobbyId}": {
+      "put": {
+        "tags": [
+          "lobbies"
+        ],
+        "description": "Disconnect the user corresponding to the nickname passed from the lobby corresponding to the id passed.",
+        "operationId": "LobbyApi::addUserToLobby",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "path",
+            "description": "Id of the lobby",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The user\u0027s nickname",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The provided id corresponds to a lobby, the user is now disconnected from the lobby, nothing is returned"
+          },
+          "404": {
+            "description": "Not found: the provided id corresponds to not existing lobby"
           }
         },
         "deprecated": false,

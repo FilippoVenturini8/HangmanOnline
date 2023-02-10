@@ -134,7 +134,7 @@ public interface LobbyController extends Controller {
     @OpenApi(
             operationId = "LobbyApi::addUserToLobby",
             path = HangmanService.BASE_URL + "/lobbies/{lobbyId}",
-            methods = {HttpMethod.GET},
+            methods = {HttpMethod.PUT},
             tags = {"lobbies"},
             description = "Put the user corresponding to the nickname passed, in the lobby corresponding to the id passed.",
             pathParams = {
@@ -171,6 +171,44 @@ public interface LobbyController extends Controller {
             }
     )
     void putUserInLobby(Context context) throws HttpResponseException;
+
+
+    @OpenApi(
+            operationId = "LobbyApi::addUserToLobby",
+            path = HangmanService.BASE_URL + "/lobbies/exit/{lobbyId}",
+            methods = {HttpMethod.PUT},
+            tags = {"lobbies"},
+            description = "Disconnect the user corresponding to the nickname passed from the lobby corresponding to the id passed.",
+            pathParams = {
+                    @OpenApiParam(
+                            name = "lobbyId",
+                            type = String.class,
+                            description = "Id of the lobby",
+                            required = true
+                    )
+            },
+            requestBody = @OpenApiRequestBody(
+                    description = "The user's nickname",
+                    required = true,
+                    content = {
+                            @OpenApiContent(
+                                    from = String.class,
+                                    mimeType = ContentType.JSON
+                            )
+                    }
+            ),
+            responses = {
+                    @OpenApiResponse(
+                            status = "200",
+                            description = "The provided id corresponds to a lobby, the user is now disconnected from the lobby, nothing is returned"
+                    ),
+                    @OpenApiResponse(
+                            status = "404",
+                            description = "Not found: the provided id corresponds to not existing lobby"
+                    )
+            }
+    )
+    void putOutUserFromLobby(Context context) throws HttpResponseException;
 
     static LobbyController of(String root) {
         return new LobbyControllerImpl(root);

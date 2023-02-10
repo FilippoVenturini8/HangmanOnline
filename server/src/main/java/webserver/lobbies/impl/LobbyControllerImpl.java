@@ -67,6 +67,16 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
     }
 
     @Override
+    public void putOutUserFromLobby(Context context) throws HttpResponseException {
+        LobbyApi api = getApi(context);
+
+        var lobbyId = context.pathParam("{lobbyId}");
+        var user = context.bodyAsClass(String.class);
+        var futureResult = api.disconnectUseFromLobby(Integer.valueOf(lobbyId), user);
+        asyncReplyWithoutBody(context, "application/json", futureResult);
+    }
+
+    @Override
     public void registerRoutes(Javalin app) {
         app.before(path("*"), Filters.ensureClientAcceptsMimeType("application", "json"));
         app.post(path("/"), this::postLobby);
@@ -74,6 +84,8 @@ public class LobbyControllerImpl extends AbstractController implements LobbyCont
         app.get(path("/"), this::getAllLobbies);
         app.get(path("/{lobbyId}"), this::getLobby);
         app.delete(path("/{lobbyId}"), this::deleteLobby);
+        app.put(path("/exit/{lobbyId}"), this::putOutUserFromLobby);
+
     }
 
 

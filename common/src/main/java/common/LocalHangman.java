@@ -78,6 +78,13 @@ public class LocalHangman implements Hangman{
     }
 
     @Override
+    public void exitLobby(int idLobby, String nicknameUser) throws MissingException {
+        Lobby lobby = this.getLobby(idLobby); //Se non è presente la lobby viene generata una MissingException qui
+        User user = this.findUser(nicknameUser);
+        lobby.removeUser(user);
+    }
+
+    @Override
     public Lobby getLobby(int idLobby) throws MissingException{
         boolean foundLobby = false;
         int lobbyIndex = -1;

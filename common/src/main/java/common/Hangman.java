@@ -15,6 +15,8 @@ public interface Hangman {
 
     void joinLobby(int idLobby, String nicknameUser) throws MissingException, ConflictException;
 
+    void exitLobby(int idLobby, String nicknameUser) throws MissingException;
+
     Lobby getLobby(int idLobby) throws MissingException;
 
     List<Lobby> getAllLobbies();
