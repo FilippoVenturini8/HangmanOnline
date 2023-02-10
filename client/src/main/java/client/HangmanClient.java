@@ -511,10 +511,18 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                             if(!game.isGameFinished()){
                                 printRoundTable(game.getRoundWon(actualUser), game.getLastRoundAttempts(), false);
                                 printHangman(game.getLastRoundAttempts());
+
+                                encodedToGuess = game.getLastRoundEncodedWord();
                             }else {
                                 printRoundTable(game.getRoundWon(actualUser), game.getAttempts(), false);
                                 printHangman(game.getAttempts());
+                                encodedToGuess = game.getEncodedWordToGuess();
                             }
+
+                            for(String c : encodedToGuess.split("")){
+                                System.out.print(c+" ");
+                            }
+                            System.out.println('\n');
 
                             if(game.getRoundWon(actualUser) > previousRoundWon){
                                 System.out.println("ROUND VINTO!");
@@ -569,10 +577,20 @@ public class HangmanClient extends AbstractHttpClientStub implements Hangman {
                             if(!game.isGameFinished()){
                                 printRoundTable(game.getRoundWon(actualUser), game.getLastRoundAttempts(), false);
                                 printHangman(game.getLastRoundAttempts());
+
+                                encodedToGuess = game.getLastRoundEncodedWord();
                             }else {
                                 printRoundTable(game.getRoundWon(actualUser), game.getAttempts(), false);
                                 printHangman(game.getAttempts());
+
+                                encodedToGuess = game.getEncodedWordToGuess();
                             }
+
+                            for(String c : encodedToGuess.split("")){
+                                System.out.print(c+" ");
+                            }
+                            System.out.println('\n');
+
                             if(game.getRoundWon(actualUser) > previousRoundWon){
                                 System.out.println("ROUND VINTO!");
                             }else {

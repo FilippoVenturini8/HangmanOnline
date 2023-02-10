@@ -32,6 +32,7 @@ public class GameSerializer implements JsonSerializer<Game> {
         object.addProperty("lastRoundAttempts", src.getLastRoundAttempts());
         object.addProperty("toGuess", src.getWordToGuess());
         object.addProperty("encodedToGuess", src.getEncodedWordToGuess());
+        object.addProperty("lastEncoded", src.getLastRoundEncodedWord());
         object.addProperty("guesserRoundWon", src.getGuesserRoundWon());
         object.add("players", players);
         object.add("results", results);

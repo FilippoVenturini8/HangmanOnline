@@ -504,6 +504,9 @@
           "encodedWordToGuess": {
             "type": "string"
           },
+          "lastRoundEncodedWord": {
+            "type": "string"
+          },
           "lastRoundAttempts": {
             "type": "integer",
             "format": "int32"

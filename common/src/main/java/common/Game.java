@@ -13,6 +13,8 @@ public class Game {
 
     private int lastRoundAttempts = 5;
 
+    private String lastRoundEncodedWord = "";
+
     private int attempts = 5;
 
     private List<User> players;
@@ -25,12 +27,13 @@ public class Game {
 
     public Game (){}
 
-    public Game(int round, int attempts, int lastRoundAttempts, String toGuess, String encodedToGuess, List<User> players, List<Integer> results, boolean guesserRoundWon) {
+    public Game(int round, int attempts, int lastRoundAttempts, String toGuess, String encodedToGuess, String lastEncoded, List<User> players, List<Integer> results, boolean guesserRoundWon) {
         this.round = round;
         this.attempts = attempts;
         this.lastRoundAttempts = lastRoundAttempts;
         this.wordToGuess = toGuess;
         this.encodedWordToGuess = encodedToGuess;
+        this.lastRoundEncodedWord = lastEncoded;
         this.players = players;
         this.results = results;
         this.guesserRoundWon = guesserRoundWon;
@@ -68,6 +71,7 @@ public class Game {
     public void newRound(){
         this.wordToGuess = null;
         this.guesserRoundWon = false;
+        this.lastRoundEncodedWord = this.encodedWordToGuess;
         this.encodedWordToGuess = "";
         this.lastRoundAttempts = this.attempts;
         this.attempts = 5;
@@ -88,6 +92,10 @@ public class Game {
 
     public String getEncodedWordToGuess() {
         return encodedWordToGuess;
+    }
+
+    public String getLastRoundEncodedWord() {
+        return lastRoundEncodedWord;
     }
 
     public int getLastRoundAttempts(){return this.lastRoundAttempts;}
